@@ -28,6 +28,7 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@expo/webpack-config": "^0.12.71",
     "@react-native-async-storage/async-storage": "^1.17.3",
     "@react-navigation/native": "~6.0.1",
     "@react-navigation/native-stack": "^6.0.2",
@@ -37,22 +38,23 @@
     "expo-linear-gradient": "^11.0.3",
     "expo-localization": "12.0.1",
     "expo-modules-core": "^0.6.5",
+    "expo-status-bar": "~1.1.0",
     "i18n-js": "3.8.0",
     "mobx": "6.1.8",
     "mobx-react-lite": "3.2.0",
     "mobx-state-tree": "5.0.1",
+    "native-base": "^3.4.5",
     "react": "17.0.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-43.0.0.tar.gz",
     "react-native-gesture-handler": "1.10.3",
     "react-native-keychain": "6.2.0",
     "react-native-safe-area-context": "3.3.2",
     "react-native-screens": "3.8.0",
+    "react-native-svg": "12.1.1",
     "reactotron-mst": "3.1.4",
     "reactotron-react-js": "^3.3.7",
     "reactotron-react-native": "5.0.1",
-    "validate.js": "0.13.1",
-    "@expo/webpack-config": "^0.12.71",
-    "expo-status-bar": "~1.1.0"
+    "validate.js": "0.13.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
