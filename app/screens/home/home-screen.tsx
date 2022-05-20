@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react"
+import React, { FC, useEffect, useRef, useState } from "react"
 import { View, ViewStyle, TextStyle, ImageStyle, SafeAreaView } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
@@ -26,6 +26,11 @@ import { SelectableBox } from "../../components/selectable-box/selectable-box"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { ScrollView } from "react-native-gesture-handler"
 import { VocabBox } from "../../components/vocab-box/vocab-box"
+import * as Notifications from "expo-notifications"
+import {
+  registerForPushNotificationsAsync,
+  schedulePushNotification,
+} from "../../utils/notification"
 
 const FULL: ViewStyle = { flex: 1 }
 const CONTAINER: ViewStyle = {
@@ -43,6 +48,28 @@ const welcome = require("./welcome.png")
 
 export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = observer(
   ({ navigation }) => {
+    const notificationListener = useRef()
+    const responseListener = useRef()
+    useEffect(() => {
+      registerForPushNotificationsAsync().then((token) => console.log(token))
+
+      notificationListener.current = Notifications.addNotificationReceivedListener(
+        (notification) => {
+          setNotification(notification)
+        },
+      )
+
+      responseListener.current = Notifications.addNotificationResponseReceivedListener(
+        (response) => {
+          console.log(response)
+        },
+      )
+
+      return () => {
+        Notifications.removeNotificationSubscription(notificationListener.current)
+        Notifications.removeNotificationSubscription(responseListener.current)
+      }
+    }, [])
     return (
       <View testID="WelcomeScreen" style={FULL}>
         <GradientBackground colors={["#fcf6ff", "#fcf6ff"]} />
@@ -101,6 +128,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
             </NBText>
             <VocabBox
               onClick={() => {
+                allowsNotificationsAsync()
                 navigation.navigate("vocab")
               }}
               size="big"
@@ -112,13 +140,16 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
             />
           </Flex>
 
-          <Flex backgroundColor mt="20px">
+          <Flex mt="20px">
             <NBText pl="5" fontWeight="bold" fontSize="xl">
               Recent Vocabulary
             </NBText>
             <ScrollView horizontal={true}>
               <Flex direction="row">
                 <VocabBox
+                  onClick={() => {
+                    registerForPushNotificationsAsync()
+                  }}
                   size="small"
                   levelText={"Intermediate / N3"}
                   hiragana={"せいひん"}
@@ -127,6 +158,11 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                   sample={"完成した製品を検査する"}
                 />
                 <VocabBox
+                  onClick={() => {
+                    schedulePushNotification().then(() => {
+                      console.log("noti will send in 2s")
+                    })
+                  }}
                   size="small"
                   levelText={"Intermediate / N3"}
                   hiragana={"せいひん"}
@@ -135,6 +171,10 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                   sample={"完成した製品を検査する"}
                 />
                 <VocabBox
+                  onClick={() => {
+                    allowsNotificationsAsync()
+                    navigation.navigate("vocab")
+                  }}
                   size="small"
                   levelText={"Intermediate / N3"}
                   hiragana={"せいひん"}
@@ -143,6 +183,10 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                   sample={"完成した製品を検査する"}
                 />
                 <VocabBox
+                  onClick={() => {
+                    allowsNotificationsAsync()
+                    navigation.navigate("vocab")
+                  }}
                   size="small"
                   levelText={"Intermediate / N3"}
                   hiragana={"せいひん"}

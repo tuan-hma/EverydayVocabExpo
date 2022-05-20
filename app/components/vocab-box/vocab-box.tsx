@@ -22,6 +22,7 @@ export interface VocabBoxProps {
   meaning: string
   sample: string
   size: "big" | "small"
+  onClick: () => void
 }
 
 /**

@@ -91,7 +91,7 @@ const FOOTER_CONTENT: ViewStyle = {
   paddingHorizontal: spacing[4],
 }
 
-const wavyBg = require("../home/wavy-bg.png")
+const wavyBg = require("./wavy-bg.png")
 
 function LevelButton(title: string, tag: string, description: string) {
   return (
