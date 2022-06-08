@@ -128,7 +128,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
             </NBText>
             <VocabBox
               onClick={() => {
-                allowsNotificationsAsync()
+                // allowsNotificationsAsync()
                 navigation.navigate("vocab")
               }}
               size="big"
@@ -172,7 +172,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                 />
                 <VocabBox
                   onClick={() => {
-                    allowsNotificationsAsync()
+                    // allowsNotificationsAsync()
                     navigation.navigate("vocab")
                   }}
                   size="small"
@@ -184,7 +184,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                 />
                 <VocabBox
                   onClick={() => {
-                    allowsNotificationsAsync()
+                    // allowsNotificationsAsync()
                     navigation.navigate("vocab")
                   }}
                   size="small"
