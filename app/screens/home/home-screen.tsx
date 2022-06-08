@@ -90,7 +90,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
               borderRadius="full"
               onPress={() => {
                 console.log("testtest")
-                navigation.navigate("setting")
+                navigation.navigate("yourday")
               }}
               icon={
                 <Icon

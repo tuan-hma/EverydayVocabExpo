@@ -19,7 +19,10 @@ import { AppNavigator, useNavigationPersistence } from "./navigators"
 import { RootStore, RootStoreProvider, setupRootStore } from "./models"
 import { ToggleStorybook } from "../storybook/toggle-storybook"
 import { ErrorBoundary } from "./screens/error/error-boundary"
-import { NativeBaseProvider } from "native-base"
+import { extendTheme, NativeBaseProvider } from "native-base"
+// eslint-disable-next-line camelcase
+import { useFonts, Nunito_400Regular, Nunito_700Bold } from "@expo-google-fonts/nunito"
+import AppLoading from "expo-app-loading"
 
 // This puts screens in a native ViewController or Activity. If you want fully native
 // stack navigation, use `createNativeStackNavigator` in place of `createStackNavigator`:
@@ -46,6 +49,11 @@ function App() {
     })()
   }, [])
 
+  let [fontsLoaded] = useFonts({
+    Nunito_400Regular,
+    Nunito_700Bold,
+  })
+
   // Before we show the app, we have to wait for our state to be ready.
   // In the meantime, don't render anything. This will be the background
   // color set in native by rootView's background color.
@@ -54,12 +62,75 @@ function App() {
   // You can replace with your own loading component if you wish.
   if (!rootStore || !isNavigationStateRestored) return null
 
+  const theme = extendTheme({
+    fontConfig: {
+      Roboto: {
+        100: {
+          normal: "Roboto-Light",
+          italic: "Roboto-LightItalic",
+        },
+        200: {
+          normal: "Roboto-Light",
+          italic: "Roboto-LightItalic",
+        },
+        300: {
+          normal: "Roboto-Light",
+          italic: "Roboto-LightItalic",
+        },
+        400: {
+          normal: "Roboto-Regular",
+          italic: "Roboto-Italic",
+        },
+        500: {
+          normal: "Roboto-Medium",
+        },
+        600: {
+          normal: "Roboto-Medium",
+          italic: "Roboto-MediumItalic",
+        },
+        // Add more variants
+        //   700: {
+        //     normal: 'Roboto-Bold',
+        //   },
+        //   800: {
+        //     normal: 'Roboto-Bold',
+        //     italic: 'Roboto-BoldItalic',
+        //   },
+        //   900: {
+        //     normal: 'Roboto-Bold',
+        //     italic: 'Roboto-BoldItalic',
+        //   },
+      },
+      Nunito: {
+        400: {
+          normal: "Nunito_400Regular",
+          italic: "Nunito_400Regular",
+        },
+        700: {
+          normal: "Nunito_700Bold",
+          italic: "Nunito_700Bold",
+        },
+      },
+    },
+
+    // Make sure values below matches any of the keys in `fontConfig`
+    fonts: {
+      heading: "Nunito",
+      body: "Nunito",
+      mono: "Nunito",
+    },
+  })
+
+  if (!fontsLoaded) {
+    return <AppLoading />
+  }
+
   // otherwise, we're ready to render the app
   return (
     <ToggleStorybook>
       <RootStoreProvider value={rootStore}>
         <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-          <NativeBaseProvider>
+          <NativeBaseProvider theme={theme}>
             <ErrorBoundary catchErrors={"always"}>
               <AppNavigator
                 initialState={initialNavigationState}
