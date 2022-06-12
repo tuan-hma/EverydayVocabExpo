@@ -23,6 +23,7 @@ import { extendTheme, NativeBaseProvider } from "native-base"
 // eslint-disable-next-line camelcase
 import { useFonts, Nunito_400Regular, Nunito_700Bold } from "@expo-google-fonts/nunito"
 import AppLoading from "expo-app-loading"
+import { LinearGradient } from "expo-linear-gradient"
 
 // This puts screens in a native ViewController or Activity. If you want fully native
 // stack navigation, use `createNativeStackNavigator` in place of `createStackNavigator`:
@@ -125,12 +126,18 @@ function App() {
     return <AppLoading />
   }
 
+  const config = {
+    dependencies: {
+      "linear-gradient": LinearGradient,
+    },
+  }
+
   // otherwise, we're ready to render the app
   return (
     <ToggleStorybook>
       <RootStoreProvider value={rootStore}>
         <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-          <NativeBaseProvider theme={theme}>
+          <NativeBaseProvider theme={theme} config={config}>
             <ErrorBoundary catchErrors={"always"}>
               <AppNavigator
                 initialState={initialNavigationState}

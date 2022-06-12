@@ -18,6 +18,7 @@ import {
 } from "../screens"
 import { navigationRef, useBackButtonHandler } from "./navigation-utilities"
 import { YourdayScreen } from "../screens/yourday/yourday-screen"
+import { YourdayTextScreen } from "../screens/yourday-text/yourday-text-screen"
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -39,6 +40,7 @@ export type NavigatorParamList = {
   home: undefined
   vocab: undefined
   yourday: undefined
+  yourdayText: undefined
   // 🔥 Your screens go here
 }
 
@@ -60,6 +62,7 @@ const AppStack = () => {
       <Stack.Screen name="vocab" component={VocabScreen} />
       <Stack.Screen name="demoList" component={DemoListScreen} />
       <Stack.Screen name="yourday" component={YourdayScreen} />
+      <Stack.Screen name="yourdayText" component={YourdayTextScreen} />
       {/** 🔥 Your screens go here */}
     </Stack.Navigator>
   )
