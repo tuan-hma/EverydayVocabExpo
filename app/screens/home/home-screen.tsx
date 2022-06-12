@@ -21,10 +21,11 @@ import {
   ChevronLeftIcon,
   IconButton,
   Image,
+  ScrollView,
 } from "native-base"
 import { SelectableBox } from "../../components/selectable-box/selectable-box"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
-import { ScrollView } from "react-native-gesture-handler"
+// import { ScrollView } from "react-native-gesture-handler"
 import { VocabBox } from "../../components/vocab-box/vocab-box"
 import * as Notifications from "expo-notifications"
 import {
@@ -43,7 +44,7 @@ const CONTAINER: ViewStyle = {
 }
 
 const wavyBg = require("./wavy-bg.png")
-const welcome = require("./welcome.png")
+const addIcon = require("./add-icon.png")
 
 export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = observer(
   ({ navigation }) => {
@@ -52,14 +53,13 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
     const responseListener = useRef()
 
     function DayPick(date: Date) {
-      const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
       return (
         <Pressable flexBasis="14.28%" key={date.getDay()}>
           {({ isHovered, isFocused, isPressed }) => {
             return (
               <VStack alignItems="center">
                 <Text color={color.palette.mildText} fontSize="md" fontWeight="bold">
-                  {days[date.getDay()]}
+                  {moment(date).format("ddd")}
                 </Text>
                 <Text color={color.palette.text} fontSize="lg" fontWeight="bold">
                   {date.getDate()}
@@ -92,7 +92,13 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
       }
     }, [])
     return (
-      <View testID="WelcomeScreen" style={FULL}>
+      <View
+        removeClippedSubviews
+        shouldRasterizeIOS
+        renderToHardwareTextureAndroid
+        testID="WelcomeScreen"
+        style={FULL}
+      >
         <Screen style={CONTAINER} preset="scroll" backgroundColor={color.palette.background}>
           <ZStack>
             <Image mt="130px" w="full" h="220px" source={wavyBg} />
@@ -154,16 +160,65 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
             />
           </Flex> */}
 
-          <Flex mt="20px">
-            <Text color={color.palette.text} pl="5" fontWeight="bold" fontSize="xl">
-              Diary Notes
-            </Text>
+          <Flex h="full" mt="20px">
+            <Flex pr="10px" direction="row" alignItems="center" justifyContent="space-between">
+              <Text color={color.palette.text} pl="5" fontWeight="bold" fontSize="xl">
+                Diary Notes
+              </Text>
+              <Pressable
+                onPress={() => {
+                  navigation.navigate("yourday")
+                }}
+              >
+                {({ isHovered, isFocused, isPressed }) => {
+                  return (
+                    <Box
+                      shadow="9"
+                      flexDirection="row"
+                      alignItems="center"
+                      p="10px"
+                      style={{
+                        transform: [
+                          {
+                            scale: isPressed ? 0.96 : 1,
+                          },
+                        ],
+                      }}
+                      bg={{
+                        linearGradient: {
+                          colors: ["#926fef", "#7751e9"],
+                          start: [1, 0],
+                          end: [0, 1],
+                        },
+                      }}
+                      w="150px"
+                      h="60px"
+                      rounded="20px"
+                    >
+                      <Box w="40px" shadow="4">
+                        <Image w="40px" h="40px" source={addIcon} />
+                      </Box>
+
+                      <Text
+                        ml="10px"
+                        shadow="3"
+                        fontSize="md"
+                        fontWeight="bold"
+                        color="white"
+                        textAlign="center"
+                      >
+                        Add Note
+                      </Text>
+                    </Box>
+                  )
+                }}
+              </Pressable>
+            </Flex>
             <Flex direction="column" p="10px" w="full">
               {feedStore.feeds.map((feed) => (
                 <MainFeed feed={feed} key={feed.id} onClick={() => {}} />
               ))}
             </Flex>
-            <ScrollView horizontal={true}></ScrollView>
           </Flex>
         </Screen>
       </View>
