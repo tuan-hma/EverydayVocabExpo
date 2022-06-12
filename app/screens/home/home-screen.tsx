@@ -2,7 +2,7 @@ import React, { FC, useEffect, useRef, useState } from "react"
 import { View, ViewStyle, TextStyle, ImageStyle, SafeAreaView } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
-import { Button, Header, Screen, Text, GradientBackground, AutoImage } from "../../components"
+import { Button, Header, Screen, GradientBackground, AutoImage } from "../../components"
 import { color, spacing, typography } from "../../theme"
 import { NavigatorParamList } from "../../navigators"
 import {
@@ -16,7 +16,7 @@ import {
   Pressable,
   Badge,
   Spacer,
-  Text as NBText,
+  Text,
   Icon,
   ChevronLeftIcon,
   IconButton,
@@ -31,25 +31,46 @@ import {
   registerForPushNotificationsAsync,
   schedulePushNotification,
 } from "../../utils/notification"
+import { useStores } from "../../models"
+import { EmojiImage } from "../../utils/emoji-image"
+import { MainFeed } from "../../components/main-feed/main-feed"
+import moment from "moment"
 
 const FULL: ViewStyle = { flex: 1 }
 const CONTAINER: ViewStyle = {
   backgroundColor: color.transparent,
   paddingHorizontal: spacing[0],
 }
-const TEXT: TextStyle = {
-  color: color.palette.black,
-  fontFamily: typography.primary,
-}
-const BOLD: TextStyle = { fontWeight: "bold" }
 
 const wavyBg = require("./wavy-bg.png")
 const welcome = require("./welcome.png")
 
 export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = observer(
   ({ navigation }) => {
+    const { feedStore } = useStores()
     const notificationListener = useRef()
     const responseListener = useRef()
+
+    function DayPick(date: Date) {
+      const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+      return (
+        <Pressable flexBasis="14.28%" key={date.getDay()}>
+          {({ isHovered, isFocused, isPressed }) => {
+            return (
+              <VStack alignItems="center">
+                <Text color={color.palette.mildText} fontSize="md" fontWeight="bold">
+                  {days[date.getDay()]}
+                </Text>
+                <Text color={color.palette.text} fontSize="lg" fontWeight="bold">
+                  {date.getDate()}
+                </Text>
+              </VStack>
+            )
+          }}
+        </Pressable>
+      )
+    }
+
     useEffect(() => {
       registerForPushNotificationsAsync().then((token) => console.log(token))
 
@@ -72,18 +93,10 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
     }, [])
     return (
       <View testID="WelcomeScreen" style={FULL}>
-        <GradientBackground colors={["#fcf6ff", "#fcf6ff"]} />
-        <ZStack>
-          <Box w="full" h="900px" overflow="hidden">
-            <GradientBackground colors={["#6d4bf0", "#977dfe"]}></GradientBackground>
-          </Box>
-          {/* <Image mt="150px" w="full" h="220px" source={wavyBg} /> */}
-        </ZStack>
-
-        <Screen style={CONTAINER} preset="scroll" backgroundColor={color.transparent}>
+        <Screen style={CONTAINER} preset="scroll" backgroundColor={color.palette.background}>
           <ZStack>
             <Image mt="130px" w="full" h="220px" source={wavyBg} />
-            <Box mt="330px" w="full" h="900px" backgroundColor="#fcf6ff"></Box>
+            <Box mt="330px" w="full" h="900px" backgroundColor={color.palette.background}></Box>
           </ZStack>
           <Flex mr="10px" w="40px" h="40px" alignSelf="flex-end">
             <IconButton
@@ -107,29 +120,30 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
           </Flex>
           <HStack pt="0" p="5" pb="0" w="full">
             <Flex mt="-10px" direction="column">
-              <NBText color="white" fontWeight="bold" fontSize="3xl">
-                Hi, welcome back!
-              </NBText>
-              <NBText color="white" fontSize="md">
-                You've learnt for{" "}
-                <NBText color="darkBlue.100" fontWeight="bold">
-                  144
-                </NBText>{" "}
-                days. Keep going
-              </NBText>
+              <Text color={color.palette.mildText} fontSize="md" fontWeight="bold">
+                {moment().format("YYYY, dddd MMM DD")}
+              </Text>
+              <Text color={color.palette.text} fontWeight="bold" fontSize="3xl">
+                Today
+              </Text>
+              <HStack>
+                {[...Array(7).keys()].map((dateNum) =>
+                  DayPick(moment().clone().weekday(dateNum).toDate()),
+                )}
+              </HStack>
             </Flex>
             <Spacer />
-            <Image shadow="3" mt="20px" alignSelf="center" w="60px" h="60px" source={welcome} />
           </HStack>
 
-          <Flex p="5" mt="10px">
-            <NBText color="white" fontWeight="bold" fontSize="xl">
+          {/* <Flex p="5" mt="10px">
+            <Text color="white" fontWeight="bold" fontSize="xl">
               Today's Vocab
-            </NBText>
+            </Text>
             <VocabBox
               onClick={() => {
                 // allowsNotificationsAsync()
-                navigation.navigate("vocab")
+                // navigation.navigate("vocab")
+                feedStore.clearFeed()
               }}
               size="big"
               levelText={"Intermediate / N3"}
@@ -138,64 +152,18 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
               meaning={"product"}
               sample={"完成した製品を検査する"}
             />
-          </Flex>
+          </Flex> */}
 
           <Flex mt="20px">
-            <NBText pl="5" fontWeight="bold" fontSize="xl">
-              Recent Vocabulary
-            </NBText>
-            <ScrollView horizontal={true}>
-              <Flex direction="row">
-                <VocabBox
-                  onClick={() => {
-                    registerForPushNotificationsAsync()
-                  }}
-                  size="small"
-                  levelText={"Intermediate / N3"}
-                  hiragana={"せいひん"}
-                  kanji={"製品"}
-                  meaning={"product"}
-                  sample={"完成した製品を検査する"}
-                />
-                <VocabBox
-                  onClick={() => {
-                    schedulePushNotification().then(() => {
-                      console.log("noti will send in 2s")
-                    })
-                  }}
-                  size="small"
-                  levelText={"Intermediate / N3"}
-                  hiragana={"せいひん"}
-                  kanji={"製品"}
-                  meaning={"product"}
-                  sample={"完成した製品を検査する"}
-                />
-                <VocabBox
-                  onClick={() => {
-                    // allowsNotificationsAsync()
-                    navigation.navigate("vocab")
-                  }}
-                  size="small"
-                  levelText={"Intermediate / N3"}
-                  hiragana={"せいひん"}
-                  kanji={"製品"}
-                  meaning={"product"}
-                  sample={"完成した製品を検査する"}
-                />
-                <VocabBox
-                  onClick={() => {
-                    // allowsNotificationsAsync()
-                    navigation.navigate("vocab")
-                  }}
-                  size="small"
-                  levelText={"Intermediate / N3"}
-                  hiragana={"せいひん"}
-                  kanji={"製品"}
-                  meaning={"product"}
-                  sample={"完成した製品を検査する"}
-                />
-              </Flex>
-            </ScrollView>
+            <Text color={color.palette.text} pl="5" fontWeight="bold" fontSize="xl">
+              Diary Notes
+            </Text>
+            <Flex direction="column" p="10px" w="full">
+              {feedStore.feeds.map((feed) => (
+                <MainFeed feed={feed} key={feed.id} onClick={() => {}} />
+              ))}
+            </Flex>
+            <ScrollView horizontal={true}></ScrollView>
           </Flex>
         </Screen>
       </View>

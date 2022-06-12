@@ -2,7 +2,7 @@ import React, { FC, useState } from "react"
 import { Animated, View, ViewStyle, TextStyle, ImageStyle, SafeAreaView } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
-import { Button, Header, Screen, Text, GradientBackground } from "../../components"
+import { Button, Header, Screen, GradientBackground } from "../../components"
 import { color, spacing, typography } from "../../theme"
 import { NavigatorParamList } from "../../navigators"
 import {
@@ -16,7 +16,7 @@ import {
   Pressable,
   Badge,
   Spacer,
-  Text as NBText,
+  Text,
   Icon,
   ChevronLeftIcon,
   IconButton,
@@ -27,6 +27,7 @@ import { SelectableBox } from "../../components/selectable-box/selectable-box"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { EmojiImage } from "../../utils/emoji-image"
 import { MainButton } from "../../components/main-button/main-button"
+import { MoodModel, MoodUtil } from "../../models/mood"
 
 const FULL: ViewStyle = { flex: 1 }
 const CONTAINER: ViewStyle = {
@@ -34,20 +35,24 @@ const CONTAINER: ViewStyle = {
   paddingHorizontal: spacing[0],
 }
 
-const BOLD: TextStyle = { fontWeight: "bold" }
-
 const wavyBg = require("./wavy-bg.png")
 
 export const YourdayScreen: FC<StackScreenProps<NavigatorParamList, "yourday">> = observer(
   ({ navigation }) => {
     const nextScreen = () => navigation.navigate("demo")
     const [selectedLevel, setSelectedLevel] = useState(0)
-    const [selectedEmoji, setSelectedEmoji] = useState<any>(null)
+    const [selectedEmoji, setSelectedEmoji] = useState<MoodModel | null>(null)
+    const moods = MoodUtil.getMoods()
 
-    function EmotionGrid(icon: any) {
-      const isSelected = icon === selectedEmoji
+    function EmotionGrid(mood: MoodModel) {
+      const isSelected = mood === selectedEmoji
       return (
-        <Pressable onPress={() => setSelectedEmoji(icon)}>
+        <Pressable
+          key={mood.code}
+          alignItems="center"
+          flexBasis="33.33%"
+          onPress={() => setSelectedEmoji(mood)}
+        >
           {({ isHovered, isFocused, isPressed }) => {
             return (
               <Box
@@ -87,7 +92,8 @@ export const YourdayScreen: FC<StackScreenProps<NavigatorParamList, "yourday">> 
                   }
                   background="transparent"
                 >
-                  <Image h="full" w="full" resizeMode="contain" source={icon} />
+                  {/* <Text fontSize="50px">{mood.emoji}</Text> */}
+                  <Image h="full" w="full" resizeMode="contain" source={mood.image} alt="emoji" />
                 </Box>
               </Box>
             )
@@ -117,37 +123,36 @@ export const YourdayScreen: FC<StackScreenProps<NavigatorParamList, "yourday">> 
               onPress={() => navigation.navigate("home")}
               icon={<ChevronLeftIcon h="60px" w="60px" />}
             ></IconButton>
-            <NBText shadow="3" color="white" fontWeight="bold" fontSize="4xl">
+            <Text shadow="3" color="white" fontWeight="bold" fontSize="4xl">
               Your day
-            </NBText>
+            </Text>
           </Flex>
           <Flex pl="5" pr="5" mt="20px">
-            <NBText shadow="3" color="white" fontWeight="bold" fontSize="xl">
+            <Text shadow="3" color="white" fontWeight="bold" fontSize="xl">
               How is your feeling right now ?
-            </NBText>
+            </Text>
             <VStack mt="10px">
-              <HStack h="130px" space={3} maxW="100%" justifyContent="space-around">
-                {EmotionGrid(EmojiImage.emoji1)}
-                {EmotionGrid(EmojiImage.emoji2)}
-                {EmotionGrid(EmojiImage.emoji3)}
+              <HStack
+                w="full"
+                justifyContent="space-between"
+                alignContent="space-between"
+                flexWrap="wrap"
+              >
+                {moods.map((mood) => EmotionGrid(mood))}
               </HStack>
-              <HStack h="130px" space={3} maxW="100%" justifyContent="space-around">
-                {EmotionGrid(EmojiImage.emoji4)}
-                {EmotionGrid(EmojiImage.emoji5)}
-                {EmotionGrid(EmojiImage.emoji6)}
-              </HStack>
-              <HStack h="130px" space={3} maxW="100%" justifyContent="space-around">
-                {EmotionGrid(EmojiImage.emoji7)}
-                {EmotionGrid(EmojiImage.emoji8)}
-                {EmotionGrid(EmojiImage.emoji9)}
-              </HStack>
+              <HStack h="130px" space={3} maxW="100%" justifyContent="space-around"></HStack>
+              <HStack h="130px" space={3} maxW="100%" justifyContent="space-around"></HStack>
             </VStack>
-            <MainButton
-              title="Continue"
-              onClick={() => {
-                navigation.navigate("yourdayText")
-              }}
-            />
+            {selectedEmoji && (
+              <MainButton
+                title={`I'm ${selectedEmoji.name}`}
+                onClick={() => {
+                  navigation.navigate("yourdayText", {
+                    mood: selectedEmoji,
+                  })
+                }}
+              />
+            )}
           </Flex>
         </Screen>
       </View>

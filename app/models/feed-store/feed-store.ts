@@ -16,23 +16,26 @@ export const FeedStoreModel = types
   .actions((self) => ({
     saveFeeds: (feedSnapshots: FeedSnapshot[]) => {
       self.feeds.replace(feedSnapshots)
+      const jsonValue = JSON.stringify(self.feeds)
+      AsyncStorage.setItem("@feeds", jsonValue)
     },
     addFeed: (feedSnapshot: FeedSnapshot) => {
       self.feeds.push(feedSnapshot)
+      const jsonValue = JSON.stringify(self.feeds)
+      AsyncStorage.setItem("@feeds", jsonValue)
+    },
+    clearFeed: () => {
+      self.feeds.clear()
     },
   }))
   .actions((self) => ({
     getFeeds: async () => {
-      const value = await AsyncStorage.getItem("@storage_Key")
-      if (value !== null) {
-        // value previously stored
-      }
-
-      if (result.kind === "ok") {
-        self.saveFeeds(result.characters)
-      } else {
-        __DEV__ && console.tron.log(result.kind)
-      }
+      // const value = await AsyncStorage.getItem("@feeds")
+      // if (value !== null) {
+      //   // value previously stored
+      //   const savedData = JSON.parse(value) as FeedSnapshot[]
+      //   self.saveFeeds(savedData)
+      // }
     },
   }))
 

@@ -29,6 +29,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { EmojiImage } from "../../utils/emoji-image"
 import { MainButton } from "../../components/main-button/main-button"
 import { useStores } from "../../models"
+import { MoodModel } from "../../models/mood"
 
 const FULL: ViewStyle = { flex: 1 }
 const CONTAINER: ViewStyle = {
@@ -37,10 +38,11 @@ const CONTAINER: ViewStyle = {
 }
 
 export const YourdayTextScreen: FC<StackScreenProps<NavigatorParamList, "yourdayText">> = observer(
-  ({ navigation }) => {
+  ({ navigation, route }) => {
+    const selectedMood: MoodModel = route.params.mood
     const nextScreen = () => navigation.navigate("demo")
     const [selectedEmoji, setSelectedEmoji] = useState<any>(null)
-    const [content, setContent] = useState<string>("")
+    const [content, setContent] = useState("")
     const { feedStore } = useStores()
 
     function EmotionGrid(icon: any) {
@@ -62,7 +64,7 @@ export const YourdayTextScreen: FC<StackScreenProps<NavigatorParamList, "yourday
           }}
           background="transparent"
         >
-          <Image h="full" w="full" resizeMode="contain" source={icon} />
+          <Image h="full" w="full" resizeMode="contain" source={icon} alt="emoji" />
         </Box>
       )
     }
@@ -96,9 +98,9 @@ export const YourdayTextScreen: FC<StackScreenProps<NavigatorParamList, "yourday
             <Flex flex="1" pl="5" pr="5" mt="5px" pb="20px">
               <VStack mt="10px" mb="10px">
                 <HStack h="80px" space={3} maxW="100%" alignItems="center">
-                  {EmotionGrid(EmojiImage.emoji1)}
+                  {EmotionGrid(selectedMood.image)}
                   <Text shadow="3" color="white" fontWeight="bold" fontSize="xl">
-                    I'm feeling happy
+                    I'm {selectedMood.name}
                   </Text>
                 </HStack>
               </VStack>
@@ -115,7 +117,6 @@ export const YourdayTextScreen: FC<StackScreenProps<NavigatorParamList, "yourday
                     bg: "#00000020",
                   }}
                   selectionColor={color.palette.text}
-                  tintColor={color.palette.text}
                   borderWidth="0"
                   bg="#00000020"
                   focusOutlineColor="amber.300"
@@ -123,21 +124,22 @@ export const YourdayTextScreen: FC<StackScreenProps<NavigatorParamList, "yourday
                   color={color.palette.text}
                   fontSize="xl"
                   value={content}
-                  onChange={(e) => {
-                    setContent(e.currentTarget.value)
+                  onChangeText={(text) => {
+                    setContent(text)
                   }}
                 />
               </Box>
               <MainButton
                 title="Add to feed"
                 onClick={() => {
+                  console.log(content)
                   feedStore.addFeed({
                     id: new Date().getTime(),
-                    emotion: "emotion-1",
+                    emotion: selectedMood.code,
                     content: content,
                     image: "",
                   })
-                  navigation.navigate("demoList")
+                  navigation.navigate("home")
                 }}
               />
             </Flex>

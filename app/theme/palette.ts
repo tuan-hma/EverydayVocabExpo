@@ -13,7 +13,8 @@ export const palette = {
 export const paletteDark = {
   background: "#2e2d42",
   text: "#ffffff",
-  mildText: "#9d88cb",
+  mildText: "#6f6596",
+  milderText: "#a79ad2",
   accent: "#dcb548",
   backgroundSelected: "#423d5a",
 }

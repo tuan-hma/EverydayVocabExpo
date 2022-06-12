@@ -19,6 +19,7 @@ import {
 import { navigationRef, useBackButtonHandler } from "./navigation-utilities"
 import { YourdayScreen } from "../screens/yourday/yourday-screen"
 import { YourdayTextScreen } from "../screens/yourday-text/yourday-text-screen"
+import { MoodModel } from "../models/mood"
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -40,7 +41,9 @@ export type NavigatorParamList = {
   home: undefined
   vocab: undefined
   yourday: undefined
-  yourdayText: undefined
+  yourdayText: {
+    mood: MoodModel
+  }
   // 🔥 Your screens go here
 }
 
