@@ -1,10 +1,11 @@
 import React, { FC, useEffect, useRef, useState } from "react"
-import { View, ViewStyle, TextStyle, ImageStyle, SafeAreaView } from "react-native"
+import { View, ViewStyle, TextStyle, ImageStyle, SafeAreaView, Dimensions } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { Button, Header, Screen, GradientBackground, AutoImage } from "../../components"
 import { color, spacing, typography } from "../../theme"
 import { NavigatorParamList } from "../../navigators"
+import Carousel from "react-native-snap-carousel"
 import {
   Flex,
   Button as NBButton,
@@ -48,20 +49,57 @@ const addIcon = require("./add-icon.png")
 
 export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = observer(
   ({ navigation }) => {
+    const DATE_FORMAT = "YYYY-MM-DD"
     const { feedStore } = useStores()
     const notificationListener = useRef()
     const responseListener = useRef()
+    const [carouselWidth, setCarouselWidth] = useState(100)
+    const [selectedDate, setSelectedDate] = useState(moment().format(DATE_FORMAT))
+    const todayFeeds = feedStore.feeds.filter(
+      (feed) => moment(feed.id).format(DATE_FORMAT) === selectedDate,
+    )
 
-    function DayPick(date: Date) {
+    function DayPick(date: Date, action: () => void) {
+      const isSelected = moment(date).format(DATE_FORMAT) === selectedDate
+      const isFuture = date > new Date()
+      const isHaveNote = true
       return (
-        <Pressable flexBasis="14.28%" key={date.getDay()}>
+        <Pressable onPress={action} flexBasis="14.28%" key={date.getDay()}>
           {({ isHovered, isFocused, isPressed }) => {
             return (
-              <VStack alignItems="center">
-                <Text color={color.palette.mildText} fontSize="md" fontWeight="bold">
+              <VStack
+                rounded="10px"
+                bg={
+                  isSelected
+                    ? {
+                        linearGradient: {
+                          colors: ["#926fef", "#7751e9"],
+                          start: [1, 0],
+                          end: [0, 1],
+                        },
+                      }
+                    : "transparent"
+                }
+                alignItems="center"
+              >
+                <Text
+                  color={isSelected ? color.palette.accent : color.palette.mildText}
+                  fontSize="md"
+                  fontWeight="bold"
+                >
                   {moment(date).format("ddd")}
                 </Text>
-                <Text color={color.palette.text} fontSize="lg" fontWeight="bold">
+                <Box
+                  w="5px"
+                  h="5px"
+                  bg={isHaveNote ? color.palette.accent : color.transparent}
+                  rounded="full"
+                ></Box>
+                <Text
+                  color={isFuture ? color.palette.mildText : color.palette.text}
+                  fontSize="lg"
+                  fontWeight="bold"
+                >
                   {date.getDate()}
                 </Text>
               </VStack>
@@ -71,26 +109,53 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
       )
     }
 
-    useEffect(() => {
-      registerForPushNotificationsAsync().then((token) => console.log(token))
-
-      notificationListener.current = Notifications.addNotificationReceivedListener(
-        (notification) => {
-          setNotification(notification)
-        },
+    const _renderItem = ({ item, index }) => {
+      return (
+        <HStack>
+          {[...Array(7).keys()].map((dateNum) =>
+            DayPick(
+              moment()
+                .clone()
+                .add(-7 * item, "d")
+                .weekday(dateNum)
+                .add(1, "d")
+                .toDate(),
+              () => {
+                setSelectedDate(
+                  moment()
+                    .clone()
+                    .add(-7 * item, "d")
+                    .weekday(dateNum)
+                    .add(1, "d")
+                    .format(DATE_FORMAT),
+                )
+              },
+            ),
+          )}
+        </HStack>
       )
+    }
 
-      responseListener.current = Notifications.addNotificationResponseReceivedListener(
-        (response) => {
-          console.log(response)
-        },
-      )
+    // useEffect(() => {
+    //   registerForPushNotificationsAsync().then((token) => console.log(token))
 
-      return () => {
-        Notifications.removeNotificationSubscription(notificationListener.current)
-        Notifications.removeNotificationSubscription(responseListener.current)
-      }
-    }, [])
+    //   notificationListener.current = Notifications.addNotificationReceivedListener(
+    //     (notification) => {
+    //       setNotification(notification)
+    //     },
+    //   )
+
+    //   responseListener.current = Notifications.addNotificationResponseReceivedListener(
+    //     (response) => {
+    //       console.log(response)
+    //     },
+    //   )
+
+    //   return () => {
+    //     Notifications.removeNotificationSubscription(notificationListener.current)
+    //     Notifications.removeNotificationSubscription(responseListener.current)
+    //   }
+    // }, [])
     return (
       <View
         removeClippedSubviews
@@ -108,7 +173,6 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
             <IconButton
               borderRadius="full"
               onPress={() => {
-                console.log("testtest")
                 navigation.navigate("yourday")
               }}
               icon={
@@ -124,19 +188,41 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
               }
             ></IconButton>
           </Flex>
-          <HStack pt="0" p="5" pb="0" w="full">
+          <View
+            // eslint-disable-next-line react-native/no-inline-styles
+            style={{ flex: 1 }}
+            onLayout={(e) => {
+              console.log(e.nativeEvent.layout.width)
+              setCarouselWidth(e.nativeEvent.layout.width)
+            }}
+          />
+          <HStack pt="0" pb="0" w="full">
             <Flex mt="-10px" direction="column">
-              <Text color={color.palette.mildText} fontSize="md" fontWeight="bold">
-                {moment().format("YYYY, dddd MMM DD")}
+              <Text pl="5" color={color.palette.mildText} fontSize="md" fontWeight="bold">
+                {moment(new Date(selectedDate)).format("YYYY, dddd MMM DD")}
               </Text>
-              <Text color={color.palette.text} fontWeight="bold" fontSize="3xl">
+              <Text pl="5" color={color.palette.text} fontWeight="bold" fontSize="3xl">
                 Today
               </Text>
-              <HStack>
+              <Carousel
+                // ref={(c) => {
+                //   this._carousel = c
+                // }}
+                data={[3, 2, 1, 0]}
+                renderItem={_renderItem}
+                sliderWidth={Dimensions.get("window").width}
+                itemWidth={Dimensions.get("window").width}
+                firstItem={3}
+              />
+              {/* <HStack>
                 {[...Array(7).keys()].map((dateNum) =>
-                  DayPick(moment().clone().weekday(dateNum).toDate()),
+                  DayPick(moment().clone().weekday(dateNum).add(1, "d").toDate(), () => {
+                    setSelectedDate(
+                      moment().clone().weekday(dateNum).add(1, "d").format("yyyy-MM-dd"),
+                    )
+                  }),
                 )}
-              </HStack>
+              </HStack> */}
             </Flex>
             <Spacer />
           </HStack>
@@ -161,7 +247,15 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
           </Flex> */}
 
           <Flex h="full" mt="20px">
-            <Flex pr="10px" direction="row" alignItems="center" justifyContent="space-between">
+            <Flex
+              // bg={color.palette.backgroundSelected}
+              pt="10px"
+              pb="5px"
+              pr="5px"
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+            >
               <Text color={color.palette.text} pl="5" fontWeight="bold" fontSize="xl">
                 Diary Notes
               </Text>
@@ -173,6 +267,8 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                 {({ isHovered, isFocused, isPressed }) => {
                   return (
                     <Box
+                      renderToHardwareTextureAndroid
+                      shouldRasterizeIOS
                       shadow="9"
                       flexDirection="row"
                       alignItems="center"
@@ -192,7 +288,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                         },
                       }}
                       w="150px"
-                      h="60px"
+                      h="62px"
                       rounded="20px"
                     >
                       <Box w="40px" shadow="4">
@@ -201,7 +297,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
 
                       <Text
                         ml="10px"
-                        shadow="3"
+                        shadow="9"
                         fontSize="md"
                         fontWeight="bold"
                         color="white"
@@ -215,9 +311,20 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
               </Pressable>
             </Flex>
             <Flex direction="column" p="10px" w="full">
-              {feedStore.feeds.map((feed) => (
-                <MainFeed feed={feed} key={feed.id} onClick={() => {}} />
-              ))}
+              {todayFeeds.length === 0 ? (
+                <Text
+                  ml="10px"
+                  shadow="9"
+                  fontSize="md"
+                  fontWeight="bold"
+                  color={color.palette.mildText}
+                  textAlign="center"
+                >
+                  No diary note on this day
+                </Text>
+              ) : (
+                todayFeeds.map((feed) => <MainFeed feed={feed} key={feed.id} onClick={() => {}} />)
+              )}
             </Flex>
           </Flex>
         </Screen>

@@ -19,7 +19,13 @@ export interface MainFeedProps {
 export function MainFeed(props: MainFeedProps) {
   const mood = MoodUtil.getMood(props.feed.emotion)
   return (
-    <Flex direction="row">
+    <Flex
+      w="full"
+      alignItems="stretch"
+      renderToHardwareTextureAndroid
+      shouldRasterizeIOS
+      direction="row"
+    >
       <Text color={color.palette.mildText} fontSize="md" fontWeight="bold" mr="20px">
         {moment(props.feed.id).format("HH:mm")}
       </Text>
@@ -40,15 +46,16 @@ export function MainFeed(props: MainFeedProps) {
           rounded="full"
         ></Box>
       </Flex>
-      <Pressable flexGrow="1" shadow="3" onPress={props.onClick}>
+      <Pressable flex="1" onPress={props.onClick}>
         {({ isHovered, isFocused, isPressed }) => {
           return (
             <Box
-              shadow="3"
+              shouldRasterizeIOS
               w="full"
+              shadow="3"
               rounded="20px"
               borderWidth="2px"
-              borderColor="#48456730"
+              borderColor="#474165"
               p="8px"
               bg={{
                 linearGradient: {
@@ -61,29 +68,23 @@ export function MainFeed(props: MainFeedProps) {
             >
               <Flex direction="row" justifyContent="space-between">
                 {/* left item */}
-                <Flex flexGrow="1" flexShrink="2" direction="column">
+                <Flex pr="10px" flexGrow="1" flexShrink="2" direction="column">
                   <Text
                     mb="10px"
                     color={color.palette.milderText}
-                    fontSize="2xl"
+                    fontSize="xl"
                     fontWeight="bold"
                     shadow="6"
                   >
                     {mood?.name}
                   </Text>
-                  <Text
-                    shadow="3"
-                    pr="10px"
-                    color={color.palette.mildText}
-                    fontSize="lg"
-                    fontWeight="bold"
-                  >
+                  <Text shadow="3" color={color.palette.mildText} fontSize="lg" fontWeight="bold">
                     {props.feed.content}
                   </Text>
                 </Flex>
                 {/* right item */}
                 <Flex justifyContent="space-between" direction="column" alignItems="flex-end">
-                  <Box bg="#524b74" rounded="xl">
+                  <Box shouldRasterizeIOS bg="#524b74" rounded="xl">
                     <Box
                       h="40px"
                       w="40px"

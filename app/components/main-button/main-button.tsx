@@ -18,8 +18,8 @@ export function MainButton(props: MainButtonProps) {
         return (
           <Box
             maxW="96"
-            borderWidth="2"
-            borderColor="#ffffff30"
+            // borderWidth="2"
+            borderColor="#8c42f9"
             bg={{
               linearGradient: {
                 colors: ["#8c42f9", "#6f36fd", "#c55bf6"],
