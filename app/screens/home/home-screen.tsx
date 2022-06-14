@@ -37,6 +37,7 @@ import { useStores } from "../../models"
 import { EmojiImage } from "../../utils/emoji-image"
 import { MainFeed } from "../../components/main-feed/main-feed"
 import moment from "moment"
+import { FeedSnapshot } from "../../models/feed-store/feed"
 
 const FULL: ViewStyle = { flex: 1 }
 const CONTAINER: ViewStyle = {
@@ -53,21 +54,47 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
     const { feedStore } = useStores()
     const notificationListener = useRef()
     const responseListener = useRef()
-    const [carouselWidth, setCarouselWidth] = useState(100)
     const [selectedDate, setSelectedDate] = useState(moment().format(DATE_FORMAT))
+    const [firstDayOfCarousel, setFirstDayOfCarousel] = useState(new Date())
     const todayFeeds = feedStore.feeds.filter(
       (feed) => moment(feed.id).format(DATE_FORMAT) === selectedDate,
     )
 
+    // TODO impl this shit
+    const carouselData = [3, 2, 1, 0]
+
+    const getDictionaryFromFeeds = (feeds: FeedSnapshot[]): Map<string, FeedSnapshot[]> => {
+      const dictionary = new Map<string, FeedSnapshot[]>()
+      feeds.forEach((feed) => {
+        let feedsOfDate = dictionary.get(moment(feed.id).format(DATE_FORMAT))
+        if (!feedsOfDate) {
+          feedsOfDate = []
+          dictionary.set(moment(feed.id).format(DATE_FORMAT), feedsOfDate)
+        }
+        feedsOfDate.push(feed)
+      })
+      return dictionary
+    }
+    const feedsDictionary = getDictionaryFromFeeds(feedStore.feeds)
+
     function DayPick(date: Date, action: () => void) {
-      const isSelected = moment(date).format(DATE_FORMAT) === selectedDate
+      const dateFormated = moment(date).format(DATE_FORMAT)
+      const isSelected = dateFormated === selectedDate
       const isFuture = date > new Date()
-      const isHaveNote = true
+      const isHaveNote = feedsDictionary?.get(dateFormated)?.length > 0 ?? false
+
       return (
         <Pressable onPress={action} flexBasis="14.28%" key={date.getDay()}>
           {({ isHovered, isFocused, isPressed }) => {
             return (
               <VStack
+                style={{
+                  transform: [
+                    {
+                      scale: isPressed ? 0.9 : 1,
+                    },
+                  ],
+                }}
                 rounded="10px"
                 bg={
                   isSelected
@@ -191,19 +218,27 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
           <View
             // eslint-disable-next-line react-native/no-inline-styles
             style={{ flex: 1 }}
-            onLayout={(e) => {
-              console.log(e.nativeEvent.layout.width)
-              setCarouselWidth(e.nativeEvent.layout.width)
-            }}
           />
           <HStack pt="0" pb="0" w="full">
             <Flex mt="-10px" direction="column">
               <Text pl="5" color={color.palette.mildText} fontSize="md" fontWeight="bold">
                 {moment(new Date(selectedDate)).format("YYYY, dddd MMM DD")}
               </Text>
-              <Text pl="5" color={color.palette.text} fontWeight="bold" fontSize="3xl">
-                Today
-              </Text>
+              <Flex
+                pl="5"
+                pr="5"
+                direction="row"
+                justifyContent="space-between"
+                alignItems="flex-end"
+              >
+                <Text color={color.palette.text} fontWeight="bold" fontSize="3xl">
+                  Today
+                </Text>
+                <Text color={color.palette.milderText} fontWeight="bold" fontSize="2xl">
+                  {moment(firstDayOfCarousel).format("MMMM YYYY")}
+                </Text>
+              </Flex>
+
               <Carousel
                 // ref={(c) => {
                 //   this._carousel = c
@@ -213,6 +248,17 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                 sliderWidth={Dimensions.get("window").width}
                 itemWidth={Dimensions.get("window").width}
                 firstItem={3}
+                onSnapToItem={(index) => {
+                  const item = carouselData[index]
+                  console.log("snaped to:", item)
+                  setFirstDayOfCarousel(
+                    moment()
+                      .clone()
+                      .add(-7 * item, "d")
+                      .weekday(2)
+                      .toDate(),
+                  )
+                }}
               />
               {/* <HStack>
                 {[...Array(7).keys()].map((dateNum) =>

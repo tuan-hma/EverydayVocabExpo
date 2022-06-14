@@ -2,9 +2,10 @@ import React, { FC, useState } from "react"
 import { Animated, View, ViewStyle, TextStyle, ImageStyle, SafeAreaView } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
-import { Button, Header, Screen, GradientBackground } from "../../components"
+import { Header, Screen, GradientBackground } from "../../components"
 import { color, spacing, typography } from "../../theme"
 import { NavigatorParamList } from "../../navigators"
+import { Feather, MaterialCommunityIcons } from "@expo/vector-icons"
 import {
   Flex,
   Button as NBButton,
@@ -25,7 +26,7 @@ import {
   TextArea,
 } from "native-base"
 import { SelectableBox } from "../../components/selectable-box/selectable-box"
-import { MaterialCommunityIcons } from "@expo/vector-icons"
+
 import { EmojiImage } from "../../utils/emoji-image"
 import { MainButton } from "../../components/main-button/main-button"
 import { useStores } from "../../models"
@@ -104,12 +105,31 @@ export const YourdayTextScreen: FC<StackScreenProps<NavigatorParamList, "yourday
                   </Text>
                 </HStack>
               </VStack>
-              <Text shadow="3" color="white" fontWeight="bold" fontSize="xl">
-                What's going on ?
-              </Text>
-              <Box flex={1} alignItems="center" mt="3" w="100%" pb="20px">
+              <Flex direction="row" alignItems="flex-end" justifyContent="space-between">
+                <Text shadow="3" color="white" fontWeight="bold" fontSize="xl">
+                  What's going on ?
+                </Text>
+                <HStack>
+                  <IconButton
+                    mr="20px"
+                    // borderRadius="full"
+                    p="0"
+                    onPress={() => navigation.navigate("home")}
+                    icon={<Feather name="camera" size={30} color={color.palette.mildText} />}
+                  ></IconButton>
+                  <IconButton
+                    // borderRadius="full"
+                    p="0"
+                    onPress={() => navigation.navigate("home")}
+                    icon={<Feather name="image" size={30} color={color.palette.mildText} />}
+                  ></IconButton>
+                </HStack>
+              </Flex>
+
+              <Box flex={1} alignItems="center" mt="3" w="100%" pb="10px">
                 <TextArea
-                  h="100%"
+                  mb="5px"
+                  flexGrow="1"
                   _hover={{
                     bg: "#00000020",
                   }}
