@@ -1,8 +1,16 @@
 import React, { FC, useEffect, useRef, useState } from "react"
-import { View, ViewStyle, TextStyle, ImageStyle, SafeAreaView, Dimensions } from "react-native"
+import {
+  View,
+  ViewStyle,
+  TextStyle,
+  ImageStyle,
+  SafeAreaView,
+  Dimensions,
+  Alert,
+} from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
-import { Button, Header, Screen, GradientBackground, AutoImage } from "../../components"
+import { Header, Screen, GradientBackground, AutoImage } from "../../components"
 import { color, spacing, typography } from "../../theme"
 import { NavigatorParamList } from "../../navigators"
 import Carousel from "react-native-snap-carousel"
@@ -23,6 +31,10 @@ import {
   IconButton,
   Image,
   ScrollView,
+  useDisclose,
+  Actionsheet,
+  AlertDialog,
+  Button,
 } from "native-base"
 import { SelectableBox } from "../../components/selectable-box/selectable-box"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
@@ -54,11 +66,15 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
     const { feedStore } = useStores()
     const notificationListener = useRef()
     const responseListener = useRef()
+    const cancelDeleteRef = React.useRef(null)
+    const deleteOption = useDisclose()
+    const deleteConfirm = useDisclose()
     const [selectedDate, setSelectedDate] = useState(moment().format(DATE_FORMAT))
     const [firstDayOfCarousel, setFirstDayOfCarousel] = useState(new Date())
     const todayFeeds = feedStore.feeds.filter(
       (feed) => moment(feed.id).format(DATE_FORMAT) === selectedDate,
     )
+    const [confirmDeleteFeed, setConfirmDeleteFeed] = useState<FeedSnapshot | null>(null)
 
     // TODO impl this shit
     const carouselData = [3, 2, 1, 0]
@@ -84,7 +100,15 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
       const isHaveNote = feedsDictionary?.get(dateFormated)?.length > 0 ?? false
 
       return (
-        <Pressable onPress={action} flexBasis="14.28%" key={date.getDay()}>
+        <Pressable
+          onPress={() => {
+            if (!isFuture) {
+              action()
+            }
+          }}
+          flexBasis="14.28%"
+          key={date.getDay()}
+        >
           {({ isHovered, isFocused, isPressed }) => {
             return (
               <VStack
@@ -193,7 +217,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
       >
         <Screen style={CONTAINER} preset="scroll" backgroundColor={color.palette.background}>
           <ZStack>
-            <Image mt="130px" w="full" h="220px" source={wavyBg} />
+            {/* <Image mt="130px" w="full" h="220px" source={wavyBg} /> */}
             <Box mt="330px" w="full" h="900px" backgroundColor={color.palette.background}></Box>
           </ZStack>
           <Flex mr="10px" w="40px" h="40px" alignSelf="flex-end">
@@ -338,7 +362,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                       rounded="20px"
                     >
                       <Box w="40px" shadow="4">
-                        <Image w="40px" h="40px" source={addIcon} />
+                        <Image w="40px" h="40px" source={addIcon} alt="addIcon" />
                       </Box>
 
                       <Text
@@ -369,10 +393,53 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                   No diary note on this day
                 </Text>
               ) : (
-                todayFeeds.map((feed) => <MainFeed feed={feed} key={feed.id} onClick={() => {}} />)
+                todayFeeds.map((feed) => (
+                  <MainFeed
+                    feed={feed}
+                    key={feed.id}
+                    onClick={() => {
+                      setConfirmDeleteFeed(feed)
+                      deleteOption.onOpen()
+                    }}
+                  />
+                ))
               )}
             </Flex>
           </Flex>
+          <Actionsheet isOpen={deleteOption.isOpen} onClose={deleteOption.onClose}>
+            <Actionsheet.Content bg={color.palette.background}>
+              <Actionsheet.Item
+                bg={color.transparent}
+                onPressOut={() => {
+                  // deleteConfirm.onOpen()
+                  Alert.alert(
+                    "Confirm Delete",
+                    "Are you sure you want to delete this diary note ?",
+                    [
+                      {
+                        text: "Cancel",
+                        onPress: () => deleteOption.onClose(),
+                        style: "cancel",
+                      },
+                      {
+                        text: "Delete",
+                        onPress: () => {
+                          if (confirmDeleteFeed) {
+                            feedStore.deleteFeed(confirmDeleteFeed)
+                          }
+                          deleteOption.onClose()
+                        },
+                      },
+                    ],
+                  )
+                }}
+              >
+                <Text fontSize="md" fontWeight="bold" color="white">
+                  Delete
+                </Text>
+              </Actionsheet.Item>
+            </Actionsheet.Content>
+          </Actionsheet>
         </Screen>
       </View>
     )

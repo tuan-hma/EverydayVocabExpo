@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Box, Flex, Pressable, Text, Image } from "native-base"
+import { Box, Flex, Pressable, Text, Image, Actionsheet } from "native-base"
 import { MoodModel, MoodUtil } from "../../models/mood"
 import { EmojiImage } from "../../utils/emoji-image"
 import { color } from "../../theme"
@@ -46,10 +46,17 @@ export function MainFeed(props: MainFeedProps) {
           rounded="full"
         ></Box>
       </Flex>
-      <Pressable flex="1" onPress={props.onClick}>
+      <Pressable flex="1" onLongPress={props.onClick}>
         {({ isHovered, isFocused, isPressed }) => {
           return (
             <Box
+              // style={{
+              //   transform: [
+              //     {
+              //       scale: isPressed ? 0.96 : 1,
+              //     },
+              //   ],
+              // }}
               shouldRasterizeIOS
               w="full"
               shadow="3"
@@ -81,6 +88,16 @@ export function MainFeed(props: MainFeedProps) {
                   <Text shadow="3" color={color.palette.mildText} fontSize="lg" fontWeight="bold">
                     {props.feed.content}
                   </Text>
+                  {props.feed.image !== "" && (
+                    <Image
+                      mt="5px"
+                      h="150px"
+                      borderRadius="10px"
+                      w={`${150 * (props.feed.imageRatio ?? 1)}px`}
+                      source={{ uri: props.feed.image }}
+                      alt="post-image"
+                    />
+                  )}
                 </Flex>
                 {/* right item */}
                 <Flex justifyContent="space-between" direction="column" alignItems="flex-end">

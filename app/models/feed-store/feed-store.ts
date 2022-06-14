@@ -27,6 +27,11 @@ export const FeedStoreModel = types
     clearFeed: () => {
       self.feeds.clear()
     },
+    deleteFeed: (feedSnapshot: FeedSnapshot) => {
+      self.feeds.remove(feedSnapshot)
+      const jsonValue = JSON.stringify(self.feeds)
+      AsyncStorage.setItem("@feeds", jsonValue)
+    },
   }))
   .actions((self) => ({
     getFeeds: async () => {

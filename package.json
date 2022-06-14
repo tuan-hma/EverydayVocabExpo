@@ -51,7 +51,7 @@
     "mobx-state-tree": "5.0.1",
     "moment": "^2.29.3",
     "native-base": "^3.4.5",
-    "react": "17.0.1",
+    "react": "17.0.2",
     "react-native": "https://github.com/expo/react-native/archive/sdk-43.0.0.tar.gz",
     "react-native-gesture-handler": "1.10.3",
     "react-native-keychain": "6.2.0",
@@ -62,7 +62,8 @@
     "reactotron-mst": "3.1.4",
     "reactotron-react-js": "^3.3.7",
     "reactotron-react-native": "5.0.1",
-    "validate.js": "0.13.1"
+    "validate.js": "0.13.1",
+    "expo-image-picker": "~11.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
