@@ -61,7 +61,7 @@ export function MainFeed(props: MainFeedProps) {
               w="full"
               shadow="3"
               rounded="20px"
-              borderWidth="2px"
+              // borderWidth="2px"
               borderColor="#474165"
               p="8px"
               bg={{

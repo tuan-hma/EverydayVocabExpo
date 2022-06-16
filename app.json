@@ -1,28 +1,32 @@
 {
-  "name": "EverydayVocabExpo",
-  "displayName": "EverydayVocabExpo",
+  "name": "MoodyDiary",
+  "displayName": "MoodyDiary",
+  "build": {
+    "production": {
+      "node": "14.19.3"
+    }
+  },
   "expo": {
-    "name": "EverydayVocabExpo",
-    "slug": "EverydayVocabExpo",
+    "name": "MoodyDiary",
+    "slug": "MoodyDiary",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#000000"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
     "assetBundlePatterns": ["**/*"],
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true,
-      "userInterfaceStyle": "dark"
+      "supportsTablet": true
     },
     "android": {
-      "userInterfaceStyle": "dark"
+      "package": "com.tuanhma.MoodyDiary"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"

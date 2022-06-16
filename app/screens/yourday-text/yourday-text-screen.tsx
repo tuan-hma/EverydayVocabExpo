@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react"
+import React, { FC, useEffect, useState } from "react"
 import { Animated, View, ViewStyle, TextStyle, ImageStyle, SafeAreaView } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
@@ -7,6 +7,7 @@ import { color, spacing, typography } from "../../theme"
 import { NavigatorParamList } from "../../navigators"
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons"
 import * as ImagePicker from "expo-image-picker"
+import { Camera } from "expo-camera"
 import {
   Flex,
   Button as NBButton,
@@ -45,7 +46,11 @@ export const YourdayTextScreen: FC<StackScreenProps<NavigatorParamList, "yourday
     const nextScreen = () => navigation.navigate("demo")
     const [image, setImage] = useState(null)
     const [content, setContent] = useState("")
+    const [hasPermission, setHasPermission] = useState(null)
     const { feedStore } = useStores()
+    const onImageTaken = (imageData: any) => {
+      setImage(imageData)
+    }
 
     function EmotionGrid(icon: any) {
       return (
@@ -77,8 +82,6 @@ export const YourdayTextScreen: FC<StackScreenProps<NavigatorParamList, "yourday
         allowsEditing: false,
         quality: 0.8,
       })
-
-      console.log(result)
 
       if (!result.cancelled) {
         setImage(result)
@@ -143,7 +146,7 @@ export const YourdayTextScreen: FC<StackScreenProps<NavigatorParamList, "yourday
                     mr="20px"
                     // borderRadius="full"
                     p="0"
-                    onPress={() => navigation.navigate("home")}
+                    onPress={() => navigation.navigate("camera", { onGoBack: onImageTaken })}
                     icon={<Feather name="camera" size={30} color={color.palette.mildText} />}
                   ></IconButton>
                   <IconButton
@@ -185,6 +188,7 @@ export const YourdayTextScreen: FC<StackScreenProps<NavigatorParamList, "yourday
                       w="full"
                       resizeMode="contain"
                       h="full"
+                      alt="note-image"
                     />
                     <Box bg="#00000090" p="5px" m="5px" rounded="10px">
                       <IconButton

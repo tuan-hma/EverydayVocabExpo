@@ -20,6 +20,7 @@ import { navigationRef, useBackButtonHandler } from "./navigation-utilities"
 import { YourdayScreen } from "../screens/yourday/yourday-screen"
 import { YourdayTextScreen } from "../screens/yourday-text/yourday-text-screen"
 import { MoodModel } from "../models/mood"
+import { CameraScreen } from "../screens/camera/camera-screen"
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -44,6 +45,9 @@ export type NavigatorParamList = {
   yourdayText: {
     mood: MoodModel
   }
+  camera: {
+    onGoBack: (imageData: any) => void
+  }
   // 🔥 Your screens go here
 }
 
@@ -66,6 +70,7 @@ const AppStack = () => {
       <Stack.Screen name="demoList" component={DemoListScreen} />
       <Stack.Screen name="yourday" component={YourdayScreen} />
       <Stack.Screen name="yourdayText" component={YourdayTextScreen} />
+      <Stack.Screen name="camera" component={CameraScreen} />
       {/** 🔥 Your screens go here */}
     </Stack.Navigator>
   )

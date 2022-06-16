@@ -57,7 +57,6 @@ const CONTAINER: ViewStyle = {
   paddingHorizontal: spacing[0],
 }
 
-const wavyBg = require("./wavy-bg.png")
 const addIcon = require("./add-icon.png")
 
 export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = observer(
@@ -76,8 +75,22 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
     )
     const [confirmDeleteFeed, setConfirmDeleteFeed] = useState<FeedSnapshot | null>(null)
 
+    const getCarouselData = (feeds: FeedSnapshot[]): number[] => {
+      if (feeds.length === 0) {
+        return [0]
+      }
+      const result: number[] = []
+      const duration = moment.duration(moment().weekday(7).diff(moment(feeds[0].id)))
+      const weeksCount = Math.floor(duration.asWeeks())
+      console.log("week count:", weeksCount)
+      for (let i = weeksCount; i >= 0; i--) {
+        result.push(i)
+      }
+      console.log("result")
+      return result
+    }
     // TODO impl this shit
-    const carouselData = [3, 2, 1, 0]
+    const carouselData = getCarouselData(feedStore.feeds)
 
     const getDictionaryFromFeeds = (feeds: FeedSnapshot[]): Map<string, FeedSnapshot[]> => {
       const dictionary = new Map<string, FeedSnapshot[]>()
@@ -112,6 +125,8 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
           {({ isHovered, isFocused, isPressed }) => {
             return (
               <VStack
+                ml="5px"
+                mr="5px"
                 style={{
                   transform: [
                     {
@@ -221,7 +236,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
             <Box mt="330px" w="full" h="900px" backgroundColor={color.palette.background}></Box>
           </ZStack>
           <Flex mr="10px" w="40px" h="40px" alignSelf="flex-end">
-            <IconButton
+            {/* <IconButton
               borderRadius="full"
               onPress={() => {
                 navigation.navigate("yourday")
@@ -237,7 +252,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                   }}
                 />
               }
-            ></IconButton>
+            ></IconButton> */}
           </Flex>
           <View
             // eslint-disable-next-line react-native/no-inline-styles
@@ -256,7 +271,16 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                 alignItems="flex-end"
               >
                 <Text color={color.palette.text} fontWeight="bold" fontSize="3xl">
-                  Today
+                  {((): string => {
+                    const duration = moment.duration(moment().diff(moment(selectedDate)))
+                    const days = Math.floor(duration.asDays())
+                    if (days === 0) {
+                      return "Today"
+                    } else if (days === 1) {
+                      return "Yesterday"
+                    }
+                    return `${days} days ago`
+                  })()}
                 </Text>
                 <Text color={color.palette.milderText} fontWeight="bold" fontSize="2xl">
                   {moment(firstDayOfCarousel).format("MMMM YYYY")}
@@ -267,7 +291,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                 // ref={(c) => {
                 //   this._carousel = c
                 // }}
-                data={[3, 2, 1, 0]}
+                data={carouselData}
                 renderItem={_renderItem}
                 sliderWidth={Dimensions.get("window").width}
                 itemWidth={Dimensions.get("window").width}
@@ -382,16 +406,31 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
             </Flex>
             <Flex direction="column" p="10px" w="full">
               {todayFeeds.length === 0 ? (
-                <Text
-                  ml="10px"
-                  shadow="9"
-                  fontSize="md"
-                  fontWeight="bold"
-                  color={color.palette.mildText}
-                  textAlign="center"
-                >
-                  No diary note on this day
-                </Text>
+                <VStack>
+                  <Text
+                    ml="10px"
+                    shadow="9"
+                    fontSize="md"
+                    fontWeight="bold"
+                    color={color.palette.mildText}
+                    textAlign="center"
+                  >
+                    No diary note on this day
+                  </Text>
+                  {moment().format(DATE_FORMAT) === selectedDate && (
+                    <Text
+                      ml="10px"
+                      shadow="9"
+                      fontSize="lg"
+                      fontWeight="bold"
+                      color={color.palette.text}
+                      textAlign="center"
+                    >
+                      {" "}
+                      Let's note something !
+                    </Text>
+                  )}
+                </VStack>
               ) : (
                 todayFeeds.map((feed) => (
                   <MainFeed
