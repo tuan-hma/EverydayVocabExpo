@@ -14,7 +14,7 @@ const os = require("os")
   { command: "npx patch-package" },
 
   // Make sure we're set up correctly
-  { command: "solidarity" },
+  // { command: "solidarity" },
 
   // Kill the metro bundler if it's running.
   { command: 'pkill -f "cli.js start" || set exit 0', onlyPlatforms: ["darwin", "linux"] },

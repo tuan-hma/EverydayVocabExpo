@@ -1,8 +1,8 @@
-import React, { FC, useState } from "react"
+import React, { FC, useEffect, useRef, useState } from "react"
 import { View, ViewStyle, TextStyle, ImageStyle, SafeAreaView } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
-import { Button, Header, Screen, Text, GradientBackground } from "../../components"
+import { Button, Header, Screen, GradientBackground } from "../../components"
 import { color, spacing, typography } from "../../theme"
 import { NavigatorParamList } from "../../navigators"
 import {
@@ -16,130 +16,67 @@ import {
   Pressable,
   Badge,
   Spacer,
-  Text as NBText,
+  Text,
   Icon,
   ChevronLeftIcon,
   IconButton,
   Image,
+  Switch,
 } from "native-base"
 import { SelectableBox } from "../../components/selectable-box/selectable-box"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
+import * as Notifications from "expo-notifications"
+import { Subscription } from "expo-modules-core"
+import { CommonButton } from "../../components/common-button/common-button"
+import moment from "moment"
+import { SettingState } from "../../utils/setting-state"
 
 const FULL: ViewStyle = { flex: 1 }
 const CONTAINER: ViewStyle = {
   backgroundColor: color.transparent,
   paddingHorizontal: spacing[0],
 }
-const TEXT: TextStyle = {
-  color: color.palette.black,
-  fontFamily: typography.primary,
-}
-const BOLD: TextStyle = { fontWeight: "bold" }
-const HEADER: TextStyle = {
-  paddingTop: spacing[3],
-  paddingBottom: spacing[4] + spacing[1],
-  paddingHorizontal: 0,
-}
-const HEADER_TITLE: TextStyle = {
-  ...TEXT,
-  ...BOLD,
-  fontSize: 12,
-  lineHeight: 15,
-  textAlign: "center",
-  letterSpacing: 1.5,
-}
-const TITLE_WRAPPER: TextStyle = {
-  ...TEXT,
-  textAlign: "left",
-  marginTop: 30,
-}
-const TITLE: TextStyle = {
-  ...TEXT,
-  ...BOLD,
-  fontSize: 28,
-  lineHeight: 38,
-  textAlign: "left",
-}
-const BOWSER: ImageStyle = {
-  alignSelf: "center",
-  marginVertical: spacing[5],
-  maxWidth: "100%",
-  width: 343,
-  height: 230,
-}
-const CONTENT: TextStyle = {
-  ...TEXT,
-  color: "#BAB6C8",
-  fontSize: 15,
-  lineHeight: 22,
-  marginBottom: spacing[5],
-}
-const CONTINUE: ViewStyle = {
-  paddingVertical: spacing[4],
-  paddingHorizontal: spacing[4],
-  backgroundColor: color.palette.deepPurple,
-}
-const CONTINUE_TEXT: TextStyle = {
-  ...TEXT,
-  ...BOLD,
-  fontSize: 13,
-  letterSpacing: 2,
-}
-const FOOTER: ViewStyle = { backgroundColor: "#fdfbfb" }
-const FOOTER_CONTENT: ViewStyle = {
-  paddingVertical: spacing[4],
-  paddingHorizontal: spacing[4],
-}
 
-const wavyBg = require("./wavy-bg.png")
-
-function LevelButton(title: string, tag: string, description: string) {
-  return (
-    <Box w="220px">
-      <HStack alignItems="center">
-        <NBText color="white" fontWeight="bold" fontSize="xl">
-          {title}
-        </NBText>
-        <Spacer />
-        <Badge
-          background="white"
-          _text={{
-            color: "#6d4bf0",
-          }}
-          variant="solid"
-          rounded="full"
-        >
-          {tag}
-        </Badge>
-      </HStack>
-
-      <NBText mt="2" fontSize="sm" color="white">
-        {description}
-      </NBText>
-    </Box>
-  )
-}
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+})
 
 export const SettingScreen: FC<StackScreenProps<NavigatorParamList, "setting">> = observer(
   ({ navigation }) => {
-    const nextScreen = () => navigation.navigate("demo")
-    const [selectedLevel, setSelectedLevel] = useState(0)
+    const [notification, setNotification] = useState<Notifications.Notification | null>(null)
+    const notificationListener = useRef<Subscription>()
+    const responseListener = useRef<Subscription>()
+    const [isNoti, setIsNoti] = useState<boolean>(false)
+
+    useEffect(() => {
+      console.log("run this")
+      SettingState.isDailySummary().then((result) => setIsNoti(result))
+
+      notificationListener.current = Notifications.addNotificationReceivedListener(
+        (notification) => {
+          setNotification(notification)
+        },
+      )
+
+      responseListener.current = Notifications.addNotificationResponseReceivedListener(
+        (response) => {
+          console.log(response)
+        },
+      )
+
+      return () => {
+        Notifications.removeNotificationSubscription(notificationListener.current)
+        Notifications.removeNotificationSubscription(responseListener.current)
+      }
+    }, [])
 
     return (
       <View testID="WelcomeScreen" style={FULL}>
-        <GradientBackground colors={["#fcf6ff", "#fcf6ff"]} />
-        <ZStack>
-          <Box w="full" h="900px" overflow="hidden">
-            <GradientBackground colors={["#6d4bf0", "#977dfe"]}></GradientBackground>
-          </Box>
-          {/* <Image mt="150px" w="full" h="220px" source={wavyBg} /> */}
-        </ZStack>
-
-        <Screen style={CONTAINER} preset="scroll" backgroundColor={color.transparent}>
-          <ZStack>
-            <Image mt="30px" w="full" h="220px" source={wavyBg} />
-            <Box mt="230px" w="full" h="900px" backgroundColor="#fcf6ff"></Box>
-          </ZStack>
+        <Screen style={CONTAINER} preset="scroll" backgroundColor={color.palette.background}>
           <Flex mt="20px" direction="row" alignItems="center">
             <IconButton
               borderRadius="full"
@@ -152,42 +89,27 @@ export const SettingScreen: FC<StackScreenProps<NavigatorParamList, "setting">> 
               onPress={() => navigation.navigate("home")}
               icon={<ChevronLeftIcon h="60px" w="60px" />}
             ></IconButton>
-            <NBText color="white" fontWeight="bold" fontSize="4xl">
-              Setting
-            </NBText>
+            <Text color={color.palette.text} fontWeight="bold" fontSize="4xl">
+              Setting ⚙️
+            </Text>
           </Flex>
           <Flex pl="5" pr="5" mt="20px">
-            <NBText color="white" fontWeight="bold" fontSize="xl">
-              Vocabulary level
-            </NBText>
-            <VStack mt="10px">
-              <SelectableBox
-                onClick={() => {
-                  setSelectedLevel(0)
+            <HStack justifyContent="space-between" alignItems="center">
+              <Text color={color.palette.text} fontWeight="bold" fontSize="2xl">
+                Daily Summary
+              </Text>
+              <Switch
+                colorScheme="yellow"
+                value={isNoti}
+                onValueChange={async (e) => {
+                  await SettingState.setIsDailySummary(e)
+                  setIsNoti(e)
                 }}
-                state={selectedLevel === 0 ? "selected" : "normal"}
-              >
-                {LevelButton("N4 - N5", "Beginner", "Basic, essensial vocabulary")}
-              </SelectableBox>
-
-              <SelectableBox
-                onClick={() => {
-                  setSelectedLevel(1)
-                }}
-                state={selectedLevel === 1 ? "selected" : "normal"}
-              >
-                {LevelButton("N3 - N4", "Intermediate", "Daily common usage vocabulary")}
-              </SelectableBox>
-
-              <SelectableBox
-                onClick={() => {
-                  setSelectedLevel(2)
-                }}
-                state={selectedLevel === 2 ? "selected" : "normal"}
-              >
-                {LevelButton("N1 - N2", "Advance", "Academic vocabulary")}
-              </SelectableBox>
-            </VStack>
+              />
+            </HStack>
+            <Text color={color.palette.text} fontWeight="normal" fontSize="md">
+              Sum up your emotions every day
+            </Text>
           </Flex>
         </Screen>
       </View>

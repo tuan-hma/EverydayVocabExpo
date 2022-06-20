@@ -131,7 +131,7 @@ export const YourdayScreen: FC<StackScreenProps<NavigatorParamList, "yourday">> 
             <Text shadow="3" color="white" fontWeight="bold" fontSize="xl">
               How is your feeling right now ?
             </Text>
-            <VStack mt="10px">
+            <VStack mt="10px" mb="10px">
               <HStack
                 w="full"
                 justifyContent="space-between"
@@ -140,8 +140,6 @@ export const YourdayScreen: FC<StackScreenProps<NavigatorParamList, "yourday">> 
               >
                 {moods.map((mood) => EmotionGrid(mood))}
               </HStack>
-              <HStack h="130px" space={3} maxW="100%" justifyContent="space-around"></HStack>
-              <HStack h="130px" space={3} maxW="100%" justifyContent="space-around"></HStack>
             </VStack>
             {selectedEmoji && (
               <MainButton

@@ -78,14 +78,14 @@ export function MainFeed(props: MainFeedProps) {
                 <Flex pr="10px" flexGrow="1" flexShrink="2" direction="column">
                   <Text
                     mb="10px"
-                    color={color.palette.milderText}
+                    color={color.palette.text}
                     fontSize="xl"
                     fontWeight="bold"
                     shadow="6"
                   >
                     {mood?.name}
                   </Text>
-                  <Text shadow="3" color={color.palette.mildText} fontSize="lg" fontWeight="bold">
+                  <Text shadow="3" color={color.palette.milderText} fontSize="lg" fontWeight="bold">
                     {props.feed.content}
                   </Text>
                   {props.feed.image !== "" && (

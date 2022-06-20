@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from "react"
-import { View, ViewStyle } from "react-native"
+import { Dimensions, View, ViewStyle } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
 import { Header, Screen, GradientBackground } from "../../components"
@@ -12,9 +12,9 @@ import { Box, Text, IconButton, ZStack, Flex } from "native-base"
 import { CameraType } from "expo-camera/build/Camera.types"
 
 const FULL: ViewStyle = { flex: 1 }
-const CONTAINER: ViewStyle = {
-  backgroundColor: color.transparent,
-  paddingHorizontal: spacing[0],
+const CAMERA_STYLE: ViewStyle = {
+  width: Dimensions.get("window").width,
+  height: (Dimensions.get("window").width * 3) / 4,
 }
 
 export const CameraScreen: FC<StackScreenProps<NavigatorParamList, "camera">> = observer(
@@ -47,12 +47,15 @@ export const CameraScreen: FC<StackScreenProps<NavigatorParamList, "camera">> = 
       return <Text>No access to camera</Text>
     }
     return (
-      <ZStack flexDirection="column" w="full" h="full">
-        <Camera
-          ref={(ref) => setCamera(ref)}
-          style={{ flex: 1, flexDirection: "column" }}
-          type={type}
-        ></Camera>
+      <ZStack bg="#000" flexDirection="column" w="full" h="full">
+        <Box mt="40%" alignSelf="center" style={CAMERA_STYLE}>
+          <Camera
+            ratio="4:3"
+            ref={(ref) => setCamera(ref)}
+            style={{ flex: 1 }}
+            type={type}
+          ></Camera>
+        </Box>
         <Flex w="full" h="full" direction="column" justifyContent="flex-end">
           <Box
             alignSelf="center"

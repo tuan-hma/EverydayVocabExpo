@@ -34,6 +34,8 @@ import { MainButton } from "../../components/main-button/main-button"
 import { useStores } from "../../models"
 import { MoodModel } from "../../models/mood"
 
+const addIcon = require("../home/add-icon.png")
+
 const FULL: ViewStyle = { flex: 1 }
 const CONTAINER: ViewStyle = {
   backgroundColor: color.transparent,
@@ -48,6 +50,7 @@ export const YourdayTextScreen: FC<StackScreenProps<NavigatorParamList, "yourday
     const [content, setContent] = useState("")
     const [hasPermission, setHasPermission] = useState(null)
     const { feedStore } = useStores()
+
     const onImageTaken = (imageData: any) => {
       setImage(imageData)
     }
@@ -120,10 +123,8 @@ export const YourdayTextScreen: FC<StackScreenProps<NavigatorParamList, "yourday
                   </HStack>
                 </VStack>
               </Flex>
-              <MainButton
-                title="+ Create"
-                onClick={() => {
-                  console.log(content)
+              <Pressable
+                onPress={() => {
                   feedStore.addFeed({
                     id: new Date().getTime(),
                     emotion: selectedMood.code,
@@ -131,9 +132,56 @@ export const YourdayTextScreen: FC<StackScreenProps<NavigatorParamList, "yourday
                     image: image?.uri ?? "",
                     imageRatio: image ? image.width / image.height : 1,
                   })
-                  navigation.navigate("home")
+                  navigation.navigate("home", {
+                    afterPost: true,
+                  })
                 }}
-              />
+              >
+                {({ isHovered, isFocused, isPressed }) => {
+                  return (
+                    <Box
+                      renderToHardwareTextureAndroid
+                      shouldRasterizeIOS
+                      shadow="9"
+                      flexDirection="row"
+                      alignItems="center"
+                      p="10px"
+                      style={{
+                        transform: [
+                          {
+                            scale: isPressed ? 0.96 : 1,
+                          },
+                        ],
+                      }}
+                      bg={{
+                        linearGradient: {
+                          colors: ["#926fef", "#7751e9"],
+                          start: [1, 0],
+                          end: [0, 1],
+                        },
+                      }}
+                      w="62px"
+                      h="62px"
+                      rounded="20px"
+                    >
+                      <Box w="40px" shadow="4">
+                        <Image w="40px" h="40px" source={addIcon} alt="addIcon" />
+                      </Box>
+
+                      {/* <Text
+                        ml="10px"
+                        shadow="9"
+                        fontSize="md"
+                        fontWeight="bold"
+                        color="white"
+                        textAlign="center"
+                      >
+                        Add Note
+                      </Text> */}
+                    </Box>
+                  )
+                }}
+              </Pressable>
             </Flex>
 
             <Flex flex="1" pl="5" pr="5" pb="20px">

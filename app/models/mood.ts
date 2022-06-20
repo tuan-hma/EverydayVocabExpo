@@ -5,6 +5,7 @@ export interface MoodModel {
   name: string
   image: any
   emoji: string
+  isNegative: boolean
 }
 
 export class MoodUtil {
@@ -13,55 +14,64 @@ export class MoodUtil {
       code: "happy",
       name: "Happy",
       image: EmojiImage.emoji1,
-      emoji: "☺️",
+      emoji: "😊",
+      isNegative: false,
     },
     {
       code: "cool",
       name: "Feeling Cool",
       image: EmojiImage.emoji2,
-      emoji: "😔",
+      emoji: "😎",
+      isNegative: false,
     },
     {
       code: "stupid",
       name: "Feeling Stupid",
       image: EmojiImage.emoji3,
-      emoji: "😣",
+      emoji: "😛",
+      isNegative: false,
     },
     {
       code: "amuse",
       name: "Thinking",
       image: EmojiImage.emoji4,
-      emoji: "😩",
+      emoji: "🤔",
+      isNegative: false,
     },
     {
       code: "emotional",
-      name: "Feeling Touched",
+      name: "Wanna cry",
       image: EmojiImage.emoji5,
-      emoji: "😳",
+      emoji: "😭",
+      isNegative: false,
     },
     {
       code: "angry",
       name: "Angry",
       image: EmojiImage.emoji6,
-      emoji: "🥺",
+      emoji: "😡",
+      isNegative: true,
     },
     {
       code: "sad",
       name: "Sad",
       image: EmojiImage.emoji7,
-      emoji: "😩",
+      emoji: "😔",
+      isNegative: true,
     },
     {
       code: "scare",
       name: "Feeling Scared",
       image: EmojiImage.emoji8,
-      emoji: "🥺",
+      emoji: "😣",
+      isNegative: true,
     },
     {
       code: "disappointed",
       name: "Disappointed",
       image: EmojiImage.emoji9,
-      emoji: "🥺",
+      emoji: "😫",
+      isNegative: true,
     },
   ]
 

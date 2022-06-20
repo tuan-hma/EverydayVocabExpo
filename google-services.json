@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "657983523371",
+    "project_id": "mooddairy-bf600",
+    "storage_bucket": "mooddairy-bf600.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:657983523371:android:43bc74e5ba89660d13b86e",
+        "android_client_info": {
+          "package_name": "com.tuanhma.MoodyDiary"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "657983523371-flqcnevrk61674rlbvak2j7b25r33utn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCczsssGQmGMdoSLRbF6BdhmlTuV9Z3ic0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "657983523371-flqcnevrk61674rlbvak2j7b25r33utn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

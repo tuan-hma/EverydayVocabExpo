@@ -111,6 +111,10 @@ function App() {
           normal: "Nunito_700Bold",
           italic: "Nunito_700Bold",
         },
+        800: {
+          normal: "Nunito_800Bold",
+          italic: "Nunito_800Bold",
+        },
       },
     },
 

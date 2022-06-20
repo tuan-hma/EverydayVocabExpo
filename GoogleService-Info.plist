@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>657983523371-godjcrfngqg3uu17ns990dge3pe8u1he.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.657983523371-godjcrfngqg3uu17ns990dge3pe8u1he</string>
+	<key>API_KEY</key>
+	<string>AIzaSyC4tnD_pHbmdaD36qChm88tm9Qply5w5rg</string>
+	<key>GCM_SENDER_ID</key>
+	<string>657983523371</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.tuanhma.MoodyDiary</string>
+	<key>PROJECT_ID</key>
+	<string>mooddairy-bf600</string>
+	<key>STORAGE_BUCKET</key>
+	<string>mooddairy-bf600.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:657983523371:ios:798db47b4245332313b86e</string>
+</dict>
+</plist>

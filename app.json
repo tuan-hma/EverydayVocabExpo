@@ -15,7 +15,7 @@
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#000000"
+      "backgroundColor": "#2e2d42"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -23,13 +23,31 @@
     "assetBundlePatterns": ["**/*"],
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "buildNumber": "2",
+      "supportsTablet": false,
+      "bundleIdentifier": "com.tuanhma.MoodyDiary",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "infoPlist": {
+        "NSCameraUsageDescription": "We use camera's picture to attach photo to your note"
+      }
     },
     "android": {
-      "package": "com.tuanhma.MoodyDiary"
+      "package": "com.tuanhma.MoodyDiary",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "config": {
+        "firebase": {
+          "apiKey": "AIzaSyDH1GW6abIAdRnBubbomp2p_qivRs6lwKg",
+          "authDomain": "mooddairy-bf600.firebaseapp.com",
+          "projectId": "mooddairy-bf600",
+          "storageBucket": "mooddairy-bf600.appspot.com",
+          "messagingSenderId": "657983523371",
+          "appId": "1:657983523371:web:b8f8434b7138361a13b86e",
+          "measurementId": "G-NGQQFST4XE"
+        }
+      }
     }
   }
 }
