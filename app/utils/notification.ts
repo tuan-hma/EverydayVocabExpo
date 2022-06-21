@@ -6,6 +6,12 @@ import { Platform } from "react-native"
 import { MoodSumItem } from "../components/mood-sum/mood-sum"
 import { FeedSnapshot } from "../models/feed-store/feed"
 import { MoodUtil } from "../models/mood"
+import { SettingState } from "./setting-state"
+
+export async function aquireNotifyPermission() {
+  await Notifications.requestPermissionsAsync()
+  SettingState.setIsDailySummary(true)
+}
 
 export async function schedulePushNotification() {
   await Notifications.scheduleNotificationAsync({

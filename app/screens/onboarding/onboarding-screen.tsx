@@ -8,6 +8,7 @@ import { NavigatorParamList } from "../../navigators"
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons"
 import * as ImagePicker from "expo-image-picker"
 import LottieView from "lottie-react-native"
+import AsyncStorage from "@react-native-async-storage/async-storage"
 import { Camera } from "expo-camera"
 import {
   Flex,
@@ -150,7 +151,8 @@ export const OnboardingScreen: FC<StackScreenProps<NavigatorParamList, "onboardi
               <Box shadow="9" pt="20px" pb="20px" pr="10px" alignSelf="center">
                 <Pressable
                   onPress={() => {
-                    navigation.navigate("home")
+                    AsyncStorage.setItem("@onboard02", "1")
+                    navigation.navigate("onboardingNoti")
                   }}
                 >
                   {({ isHovered, isFocused, isPressed }) => {

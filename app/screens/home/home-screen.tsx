@@ -71,6 +71,7 @@ const CONTAINER: ViewStyle = {
 
 const addIcon = require("./add-icon.png")
 const settingIcon = require("./setting-icon.png")
+const starIcon = require("./star-icon.png")
 
 interface FeedSection {
   title: string
@@ -88,9 +89,11 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
     const deleteConfirm = useDisclose()
     const [selectedDate, setSelectedDate] = useState(moment().format(DATE_FORMAT))
     const [firstDayOfCarousel, setFirstDayOfCarousel] = useState(new Date())
+    const [streak, setStreak] = useState(0)
     const todayFeeds = feedStore.feeds.filter(
       (feed) => moment(feed.id).format(DATE_FORMAT) === selectedDate,
     )
+
     const afterPost: boolean | undefined = route.params?.afterPost
     const [congrated, setCongrated] = useState(false)
     const sectionList = useRef<SectionList>()
@@ -109,10 +112,19 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
             }
           })
         }
+        // AsyncStorage.clear()
+        // navigation.navigate("onboardingNoti")
         AsyncStorage.getItem("@onboard01").then((isOnboard) => {
           if (!isOnboard) {
             AsyncStorage.setItem("@onboard01", "1")
             navigation.navigate("onboarding")
+          } else {
+            AsyncStorage.getItem("@onboard02").then((isOnboard2) => {
+              if (!isOnboard2) {
+                AsyncStorage.setItem("@onboard02", "1")
+                navigation.navigate("onboardingNoti")
+              }
+            })
           }
         })
       }, []),
@@ -135,19 +147,40 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
     // TODO impl this shit
     const carouselData = getCarouselData(feedStore.feeds)
 
-    const getDictionaryFromFeeds = (feeds: FeedSnapshot[]): Map<string, FeedSnapshot[]> => {
+    const calculateDictionaryFromFeeds = (feeds: FeedSnapshot[]) => {
+      console.log("calculateDictionaryFromFeeds")
       const dictionary = new Map<string, FeedSnapshot[]>()
+      let streak = 0
       feeds.forEach((feed) => {
         let feedsOfDate = dictionary.get(moment(feed.id).format(DATE_FORMAT))
         if (!feedsOfDate) {
+          if (dictionary.get(moment(feed.id).add(-1, "d").format(DATE_FORMAT))) {
+            streak += 1
+          } else {
+            streak = 1
+          }
           feedsOfDate = []
           dictionary.set(moment(feed.id).format(DATE_FORMAT), feedsOfDate)
         }
         feedsOfDate.push(feed)
       })
-      return dictionary
+
+      if (!dictionary.get(moment().format(DATE_FORMAT))) {
+        streak = 0
+      }
+      setStreak(streak)
+      setFeedsDictionary(dictionary)
     }
-    const feedsDictionary = getDictionaryFromFeeds(feedStore.feeds)
+
+    const [feedsDictionary, setFeedsDictionary] = useState<Map<string, FeedSnapshot[]>>(
+      new Map<string, FeedSnapshot[]>(),
+    )
+
+    useEffect(() => {
+      calculateDictionaryFromFeeds(feedStore.feeds)
+    }, [feedStore.feeds])
+
+    // const feedsDictionary = getDictionaryFromFeeds(feedStore.feeds)
     // const sectionData: FeedSection[] = Array.from(feedsDictionary.entries()).map((source) => {
     //   return { title: source[0], data: source[1] } as FeedSection
     // })
@@ -407,7 +440,67 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                     />
                   )}
                 </Flex>
-                <Box shadow="9" pt="10px" pb="20px" pr="10px" alignSelf="center">
+                <Box shadow="9" pt="10px" pb="20px" pl="10px" alignSelf="flex-start">
+                  <Pressable onPress={() => {}}>
+                    {({ isHovered, isFocused, isPressed }) => {
+                      return (
+                        <Box
+                          renderToHardwareTextureAndroid
+                          shouldRasterizeIOS
+                          shadow="9"
+                          flexDirection="row"
+                          alignItems="center"
+                          p="10px"
+                          style={{
+                            transform: [
+                              {
+                                scale: isPressed ? 0.96 : 1,
+                              },
+                            ],
+                          }}
+                          bg={{
+                            linearGradient: {
+                              colors: [color.palette.colorful1, color.palette.colorful2],
+                              start: [1, 0],
+                              end: [0, 1],
+                            },
+                          }}
+                          // w="150px"
+                          // h="62px"
+                          rounded="20px"
+                        >
+                          <ZStack w="40px" h="40px">
+                            <Box w="40px" shadow="4">
+                              <Image w="40px" h="40px" source={starIcon} alt="star-icon" />
+                            </Box>
+                          </ZStack>
+                          <VStack>
+                            <Text
+                              ml="10px"
+                              shadow="9"
+                              fontSize="md"
+                              fontWeight="bold"
+                              color="white"
+                              textAlign="center"
+                            >
+                              Streak
+                            </Text>
+                            <Text
+                              ml="10px"
+                              fontSize="md"
+                              fontWeight="bold"
+                              color={color.palette.accent}
+                              textAlign="center"
+                            >
+                              {streak} day{streak > 1 ? "s" : ""}
+                            </Text>
+                          </VStack>
+                        </Box>
+                      )
+                    }}
+                  </Pressable>
+                </Box>
+                <Box shadow="9" pt="10px" pb="20px" pr="10px" alignSelf="flex-end">
                   <CommonButton
                     onClick={() => {
                       navigation.navigate("yourday")
@@ -416,14 +509,14 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                     text="Add note"
                   />
                 </Box>
-                <Box shadow="9" pt="10px" pb="20px" pr="10px" alignSelf="flex-end">
+                {/* <Box shadow="9" pt="10px" pb="20px" pr="10px" alignSelf="flex-end">
                   <CommonButton
                     onClick={() => {
                       navigation.navigate("setting")
                     }}
                     icon={settingIcon}
                   />
-                </Box>
+                </Box> */}
                 {afterPost && !congrated && todayFeeds.length === 1 && (
                   <AspectRatio alignSelf="center" mb="30%" w="full" ratio={1 / 1}>
                     <VStack bg={color.palette.backgroundSelected} rounded="30px" w="full" h="full">

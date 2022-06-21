@@ -23,6 +23,7 @@ import { MoodModel } from "../models/mood"
 import { CameraScreen } from "../screens/camera/camera-screen"
 import { Feed } from "../models/feed-store/feed"
 import { OnboardingScreen } from "../screens/onboarding/onboarding-screen"
+import { OnboardingNotiScreen } from "../screens/onboarding-noti/onboarding-noti-screen"
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -53,6 +54,7 @@ export type NavigatorParamList = {
     onGoBack: (imageData: any) => void
   }
   onboarding: undefined
+  onboardingNoti: undefined
   // 🔥 Your screens go here
 }
 
@@ -67,6 +69,8 @@ const AppStack = () => {
       }}
       initialRouteName="home"
     >
+      <Stack.Screen name="onboarding" component={OnboardingScreen} />
+      <Stack.Screen name="onboardingNoti" component={OnboardingNotiScreen} />
       <Stack.Screen name="home" component={HomeScreen} />
       <Stack.Screen name="setting" component={SettingScreen} />
       <Stack.Screen name="welcome" component={WelcomeScreen} />
@@ -76,7 +80,7 @@ const AppStack = () => {
       <Stack.Screen name="yourday" component={YourdayScreen} />
       <Stack.Screen name="yourdayText" component={YourdayTextScreen} />
       <Stack.Screen name="camera" component={CameraScreen} />
-      <Stack.Screen name="onboarding" component={OnboardingScreen} />
+
       {/** 🔥 Your screens go here */}
     </Stack.Navigator>
   )
