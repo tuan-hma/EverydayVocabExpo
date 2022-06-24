@@ -16,6 +16,7 @@ import { observer } from "mobx-react-lite"
 import { Header, Screen, GradientBackground, AutoImage } from "../../components"
 import { color, spacing, typography } from "../../theme"
 import { NavigatorParamList } from "../../navigators"
+import * as Haptics from "expo-haptics"
 import Carousel from "react-native-snap-carousel"
 import {
   Flex,
@@ -102,10 +103,11 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
         setCongrated(false)
         if (afterPost) {
           setSelectedDate(moment().format(DATE_FORMAT))
-          sectionList?.current?.scrollToLocation({
-            sectionIndex: 0,
-            itemIndex: todayFeeds.length - 1,
-          })
+          // TODO: fix this
+          // sectionList?.current?.scrollToLocation({
+          //   sectionIndex: 0,
+          //   itemIndex: todayFeeds.length - 1,
+          // })
           SettingState.isDailySummary().then((isOk) => {
             if (isOk) {
               scheduleYesterdayResultNoti(todayFeeds)
@@ -148,7 +150,6 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
     const carouselData = getCarouselData(feedStore.feeds)
 
     const calculateDictionaryFromFeeds = (feeds: FeedSnapshot[]) => {
-      console.log("calculateDictionaryFromFeeds")
       const dictionary = new Map<string, FeedSnapshot[]>()
       let streak = 0
       feeds.forEach((feed) => {
@@ -165,7 +166,10 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
         feedsOfDate.push(feed)
       })
 
-      if (!dictionary.get(moment().format(DATE_FORMAT))) {
+      if (
+        !dictionary.get(moment().add(-1, "d").format(DATE_FORMAT)) &&
+        !dictionary.get(moment().format(DATE_FORMAT))
+      ) {
         streak = 0
       }
       setStreak(streak)
@@ -178,7 +182,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
 
     useEffect(() => {
       calculateDictionaryFromFeeds(feedStore.feeds)
-    }, [feedStore.feeds])
+    }, [feedStore.feeds.length])
 
     // const feedsDictionary = getDictionaryFromFeeds(feedStore.feeds)
     // const sectionData: FeedSection[] = Array.from(feedsDictionary.entries()).map((source) => {
@@ -195,6 +199,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
       return (
         <Pressable
           onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
             if (!isFuture) {
               action()
             }

@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Box, Pressable, Text, Image } from "native-base"
 import { color } from "../../theme"
-
+import * as Haptics from "expo-haptics"
 export interface CommonButtonProps {
   onClick: () => void
   icon?: any
@@ -17,6 +17,7 @@ export function CommonButton(props: CommonButtonProps) {
   return (
     <Pressable
       onPress={() => {
+        Haptics.selectionAsync()
         props.onClick()
       }}
     >

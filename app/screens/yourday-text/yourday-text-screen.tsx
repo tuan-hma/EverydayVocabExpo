@@ -7,6 +7,7 @@ import { color, spacing, typography } from "../../theme"
 import { NavigatorParamList } from "../../navigators"
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons"
 import * as ImagePicker from "expo-image-picker"
+import * as Haptics from "expo-haptics"
 import { Camera } from "expo-camera"
 import {
   Flex,
@@ -125,6 +126,7 @@ export const YourdayTextScreen: FC<StackScreenProps<NavigatorParamList, "yourday
               </Flex>
               <Pressable
                 onPress={() => {
+                  Haptics.selectionAsync()
                   feedStore.addFeed({
                     id: new Date().getTime(),
                     emotion: selectedMood.code,

@@ -5,6 +5,7 @@ import { observer } from "mobx-react-lite"
 import { Button, Header, Screen, GradientBackground } from "../../components"
 import { color, spacing, typography } from "../../theme"
 import { NavigatorParamList } from "../../navigators"
+import * as Haptics from "expo-haptics"
 import {
   Flex,
   Button as NBButton,
@@ -51,7 +52,10 @@ export const YourdayScreen: FC<StackScreenProps<NavigatorParamList, "yourday">> 
           key={mood.code}
           alignItems="center"
           flexBasis="33.33%"
-          onPress={() => setSelectedEmoji(mood)}
+          onPress={() => {
+            Haptics.selectionAsync()
+            setSelectedEmoji(mood)
+          }}
         >
           {({ isHovered, isFocused, isPressed }) => {
             return (

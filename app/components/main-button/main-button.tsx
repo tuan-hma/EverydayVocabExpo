@@ -1,5 +1,6 @@
 import * as React from "react"
 import { Box, Pressable, Text } from "native-base"
+import * as Haptics from "expo-haptics"
 
 export interface MainButtonProps {
   title: string
@@ -13,7 +14,13 @@ export interface MainButtonProps {
  */
 export function MainButton(props: MainButtonProps) {
   return (
-    <Pressable shadow="3" onPress={props.onClick}>
+    <Pressable
+      shadow="3"
+      onPress={() => {
+        Haptics.selectionAsync()
+        props.onClick()
+      }}
+    >
       {({ isHovered, isFocused, isPressed }) => {
         return (
           <Box
