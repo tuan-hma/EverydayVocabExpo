@@ -1,6 +1,9 @@
 import * as React from "react"
 import { Box, Pressable, Text } from "native-base"
 import * as Haptics from "expo-haptics"
+import { useStores } from "../../models"
+import { ColorThemeUtil } from "../../models/colorTheme"
+import { SettingOptionIdDefine } from "../../models/setting-store/setting-option"
 
 export interface MainButtonProps {
   title: string
@@ -13,6 +16,10 @@ export interface MainButtonProps {
  * This component is a HOC over the built-in React Native one.
  */
 export function MainButton(props: MainButtonProps) {
+  const { feedStore, settingOptionStore } = useStores()
+  const colorTheme = ColorThemeUtil.getColorThemeById(
+    settingOptionStore.getSettingOption(SettingOptionIdDefine.colorTheme),
+  )
   return (
     <Pressable
       shadow="3"

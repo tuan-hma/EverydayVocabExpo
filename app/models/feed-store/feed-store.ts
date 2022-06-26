@@ -20,9 +20,9 @@ export const FeedStoreModel = types
       AsyncStorage.setItem("@feeds", jsonValue)
     },
     addFeed: (feedSnapshot: FeedSnapshot) => {
-      self.feeds.push(feedSnapshot)
       const jsonValue = JSON.stringify(self.feeds)
       AsyncStorage.setItem("@feeds", jsonValue)
+      self.feeds.push(feedSnapshot)
     },
     clearFeed: () => {
       self.feeds.clear()
@@ -35,12 +35,12 @@ export const FeedStoreModel = types
   }))
   .actions((self) => ({
     getFeeds: async () => {
-      // const value = await AsyncStorage.getItem("@feeds")
-      // if (value !== null) {
-      //   // value previously stored
-      //   const savedData = JSON.parse(value) as FeedSnapshot[]
-      //   self.saveFeeds(savedData)
-      // }
+      const value = await AsyncStorage.getItem("@feeds")
+      if (value !== null) {
+        // value previously stored
+        const savedData = JSON.parse(value) as FeedSnapshot[]
+        self.saveFeeds(savedData)
+      }
     },
   }))
 

@@ -2,6 +2,9 @@ import * as React from "react"
 import { Box, Pressable, Text, Image } from "native-base"
 import { color } from "../../theme"
 import * as Haptics from "expo-haptics"
+import { useStores } from "../../models"
+import { ColorThemeUtil } from "../../models/colorTheme"
+import { SettingOptionIdDefine } from "../../models/setting-store/setting-option"
 export interface CommonButtonProps {
   onClick: () => void
   icon?: any
@@ -14,6 +17,10 @@ export interface CommonButtonProps {
  * This component is a HOC over the built-in React Native one.
  */
 export function CommonButton(props: CommonButtonProps) {
+  const { feedStore, settingOptionStore } = useStores()
+  const colorTheme = ColorThemeUtil.getColorThemeById(
+    settingOptionStore.getSettingOption(SettingOptionIdDefine.colorTheme),
+  )
   return (
     <Pressable
       onPress={() => {
@@ -39,7 +46,7 @@ export function CommonButton(props: CommonButtonProps) {
             }}
             bg={{
               linearGradient: {
-                colors: [color.palette.colorful1, color.palette.colorful2],
+                colors: [colorTheme.palette.colorful1, colorTheme.palette.colorful2],
                 start: [1, 0],
                 end: [0, 1],
               },
@@ -56,7 +63,7 @@ export function CommonButton(props: CommonButtonProps) {
 
             {props.text && (
               <Text
-                ml="10px"
+                ml={props.icon ? "10px" : "0px"}
                 shadow="9"
                 fontSize="md"
                 fontWeight="bold"

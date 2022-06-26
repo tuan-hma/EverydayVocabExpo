@@ -10,6 +10,7 @@ export const FeedModel = types.model("Feed").props({
   content: types.maybe(types.string),
   image: types.maybe(types.string),
   imageRatio: types.maybe(types.number),
+  imageBase64: types.maybe(types.string),
 })
 
 type FeedType = Instance<typeof FeedModel>
