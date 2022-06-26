@@ -58,17 +58,19 @@ export async function notificationSettingChange(isOn: boolean) {
 }
 
 export async function scheduleYesterdayResultNoti(feeds: FeedSnapshot[]) {
-  console.log("this was trigger")
   const moodsum = getMoodSumResult(feeds)
   let emoText = ""
   moodsum.forEach((mood) => (emoText += `${mood.count}x${mood.mood.emoji} `))
-  let title = "🥺 I'm missing you"
+  let title = "🥺 We missed you"
   let content = "Let's write something for today"
 
   if (moodsum.length > 0) {
     title = "✏️Yesterday's summary!"
     content = `${emoText}, let's write something for today`
   }
+
+  let targetTime = moment().add(1, "d").format("YYYY/MM/DD") + " 07:00:00"
+  targetTime = "2022/06/25 15:20:00"
 
   await Notifications.cancelAllScheduledNotificationsAsync()
   await Notifications.scheduleNotificationAsync({
@@ -77,7 +79,18 @@ export async function scheduleYesterdayResultNoti(feeds: FeedSnapshot[]) {
       body: content,
       data: { data: "goes here" },
     },
-    trigger: { date: moment(moment().add(1, "d").format("YYYY/MM/DD") + " 09:00:00").toDate() },
+    trigger: { date: moment(targetTime).toDate() },
+  })
+
+  const titleMissing = "🥺 We missed you"
+  const contentMissng = "Let's write something for today"
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: titleMissing,
+      body: contentMissng,
+      data: { data: "goes here" },
+    },
+    trigger: { date: moment(moment().add(2, "d").format("YYYY/MM/DD") + " 09:00:00").toDate() },
   })
 }
 

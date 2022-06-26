@@ -5,10 +5,12 @@ import { EmojiImage } from "../../utils/emoji-image"
 import { color } from "../../theme"
 import { FeedSnapshot } from "../../models/feed-store/feed"
 import moment from "moment"
+import * as Haptics from "expo-haptics"
 
 export interface MainFeedProps {
   feed: FeedSnapshot
   onClick: () => void
+  onLongTap: () => void
 }
 
 /**
@@ -19,13 +21,7 @@ export interface MainFeedProps {
 export function MainFeed(props: MainFeedProps) {
   const mood = MoodUtil.getMood(props.feed.emotion)
   return (
-    <Flex
-      w="full"
-      alignItems="stretch"
-      renderToHardwareTextureAndroid
-      shouldRasterizeIOS
-      direction="row"
-    >
+    <Flex w="full" alignItems="stretch" direction="row">
       <Text color={color.palette.mildText} fontSize="md" fontWeight="bold" mr="20px">
         {moment(props.feed.id).format("HH:mm")}
       </Text>
@@ -46,7 +42,17 @@ export function MainFeed(props: MainFeedProps) {
           rounded="full"
         ></Box>
       </Flex>
-      <Pressable flex="1" onLongPress={props.onClick}>
+      <Pressable
+        flex="1"
+        onPress={() => {
+          // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+          props.onClick()
+        }}
+        onLongPress={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
+          props.onLongTap()
+        }}
+      >
         {({ isHovered, isFocused, isPressed }) => {
           return (
             <Box
@@ -90,6 +96,7 @@ export function MainFeed(props: MainFeedProps) {
                   </Text>
                   {props.feed.image !== "" && (
                     <Image
+                      fallbackElement={<Box></Box>}
                       mt="5px"
                       h="150px"
                       borderRadius="10px"

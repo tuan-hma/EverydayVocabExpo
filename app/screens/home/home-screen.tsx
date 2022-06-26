@@ -1,26 +1,17 @@
 import React, { FC, useEffect, useRef, useState } from "react"
 import LottieView from "lottie-react-native"
-import {
-  View,
-  ViewStyle,
-  TextStyle,
-  ImageStyle,
-  SafeAreaView,
-  Dimensions,
-  Alert,
-  SectionList,
-} from "react-native"
+import { View, ViewStyle, Dimensions, Alert, SectionList, Modal } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { useFocusEffect } from "@react-navigation/native"
 import { observer } from "mobx-react-lite"
-import { Header, Screen, GradientBackground, AutoImage } from "../../components"
+import { Screen } from "../../components"
 import { color, spacing, typography } from "../../theme"
 import { NavigatorParamList } from "../../navigators"
 import * as Haptics from "expo-haptics"
 import Carousel from "react-native-snap-carousel"
+import ImageViewer from "react-native-image-zoom-viewer"
 import {
   Flex,
-  Button as NBButton,
   VStack,
   HStack,
   ZStack,
@@ -37,38 +28,23 @@ import {
   ScrollView,
   useDisclose,
   Actionsheet,
-  AlertDialog,
-  Button,
-  Fab,
   FlatList,
   AspectRatio,
 } from "native-base"
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import { SelectableBox } from "../../components/selectable-box/selectable-box"
-import { Feather, MaterialCommunityIcons } from "@expo/vector-icons"
+import { Ionicons } from "@expo/vector-icons"
 // import { ScrollView } from "react-native-gesture-handler"
-import { VocabBox } from "../../components/vocab-box/vocab-box"
-import * as Notifications from "expo-notifications"
-import {
-  registerForPushNotificationsAsync,
-  schedulePushNotification,
-  scheduleYesterdayResultNoti,
-} from "../../utils/notification"
+
+import { scheduleYesterdayResultNoti } from "../../utils/notification"
 import { useStores } from "../../models"
-import { EmojiImage } from "../../utils/emoji-image"
 import { MainFeed } from "../../components/main-feed/main-feed"
 import moment from "moment"
 import { FeedSnapshot } from "../../models/feed-store/feed"
 import { MoodSum } from "../../components/mood-sum/mood-sum"
 import { CommonButton } from "../../components/common-button/common-button"
-import { SettingState } from "../../utils/setting-state"
+import * as StoreReview from "expo-store-review"
 
 const FULL: ViewStyle = { flex: 1 }
-const CONTAINER: ViewStyle = {
-  backgroundColor: color.transparent,
-  paddingHorizontal: spacing[0],
-  flex: 1,
-}
 
 const addIcon = require("./add-icon.png")
 const settingIcon = require("./setting-icon.png")
@@ -81,6 +57,7 @@ interface FeedSection {
 
 export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = observer(
   ({ navigation, route }) => {
+    const imageModalDisclosure = useDisclose()
     const DATE_FORMAT = "YYYY-MM-DD"
     const { feedStore } = useStores()
     const notificationListener = useRef()
@@ -91,6 +68,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
     const [selectedDate, setSelectedDate] = useState(moment().format(DATE_FORMAT))
     const [firstDayOfCarousel, setFirstDayOfCarousel] = useState(new Date())
     const [streak, setStreak] = useState(0)
+    const [selectedImage, setSelectedImage] = useState("")
     const todayFeeds = feedStore.feeds.filter(
       (feed) => moment(feed.id).format(DATE_FORMAT) === selectedDate,
     )
@@ -102,17 +80,18 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
       React.useCallback(() => {
         setCongrated(false)
         if (afterPost) {
+          scheduleYesterdayResultNoti(todayFeeds)
           setSelectedDate(moment().format(DATE_FORMAT))
           // TODO: fix this
           // sectionList?.current?.scrollToLocation({
           //   sectionIndex: 0,
           //   itemIndex: todayFeeds.length - 1,
           // })
-          SettingState.isDailySummary().then((isOk) => {
-            if (isOk) {
-              scheduleYesterdayResultNoti(todayFeeds)
-            }
-          })
+          // SettingState.isDailySummary().then((isOk) => {
+          //   if (isOk) {
+
+          //   }
+          // })
         }
         // AsyncStorage.clear()
         // navigation.navigate("onboardingNoti")
@@ -139,7 +118,9 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
         return [0]
       }
       const result: number[] = []
-      const duration = moment.duration(moment().weekday(7).diff(moment(feeds[0].id)))
+      const duration = moment.duration(
+        moment().isoWeekday(1).diff(moment(feeds[0].id).isoWeekday(1)),
+      )
       const weeksCount = Math.floor(duration.asWeeks())
       for (let i = weeksCount; i >= 0; i--) {
         result.push(i)
@@ -173,6 +154,11 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
         streak = 0
       }
       setStreak(streak)
+
+      // request review if streak > 2
+      if (streak >= 1) {
+        StoreReview.requestReview()
+      }
       setFeedsDictionary(dictionary)
     }
 
@@ -268,7 +254,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
               moment()
                 .clone()
                 .add(-7 * item, "d")
-                .weekday(dateNum)
+                .isoWeekday(dateNum)
                 .add(1, "d")
                 .toDate(),
               () => {
@@ -276,7 +262,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                   moment()
                     .clone()
                     .add(-7 * item, "d")
-                    .weekday(dateNum)
+                    .isoWeekday(dateNum)
                     .add(1, "d")
                     .format(DATE_FORMAT),
                 )
@@ -301,7 +287,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                 <Box>
                   <Flex
                     pl="10px"
-                    pr="5"
+                    pr="10px"
                     direction="row"
                     justifyContent="space-between"
                     alignItems="flex-end"
@@ -337,6 +323,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                     />
                   </Box>
                   <HStack
+                    maxW={Dimensions.get("window").width - 20}
                     mt="10px"
                     mr="10px"
                     ml="10px"
@@ -417,23 +404,34 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                     </VStack>
                   ) : (
                     <SectionList
+                      // initialNumToRender={1}
                       onScrollToIndexFailed={() => {}}
                       // getItemLayout={(data) ={}}
                       ref={sectionList}
                       decelerationRate={0.5}
                       showsVerticalScrollIndicator={false}
                       sections={sectionData}
+                      removeClippedSubviews={true}
                       renderItem={(item) => {
                         // setSelectedDate(item.section.title)
                         return (
                           <Box
+                            key={(item.item as FeedSnapshot).id as number}
+                            renderToHardwareTextureAndroid
+                            shouldRasterizeIOS
+                            // maxW={Dimensions.get("window").width - 20}
                             mt={item.index === 0 ? "10px" : "0px"}
                             mb={item.index === todayFeeds.length - 1 ? "100px" : "0px"}
                           >
                             <MainFeed
                               feed={item.item as FeedSnapshot}
-                              key={(item.item as FeedSnapshot).id as number}
                               onClick={() => {
+                                if (todayFeeds[item.index].image !== "") {
+                                  setSelectedImage(todayFeeds[item.index].image)
+                                  imageModalDisclosure.onOpen()
+                                }
+                              }}
+                              onLongTap={() => {
                                 setConfirmDeleteFeed(todayFeeds[item.index])
                                 deleteOption.onOpen()
                               }}
@@ -588,6 +586,38 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                 </Actionsheet.Content>
               </Actionsheet>
             </Flex>
+            <Modal visible={imageModalDisclosure.isOpen} transparent={true} animationType="fade">
+              <Flex bg="#000000" w="full" h="full">
+                <Box
+                  justifyContent="center"
+                  alignItems="center"
+                  bg="#222"
+                  w="35px"
+                  h="35px"
+                  p="5px"
+                  m="5px"
+                  mt="60px"
+                  ml="10px"
+                  rounded="30px"
+                >
+                  <IconButton
+                    // borderRadius="full"
+                    _pressed={{
+                      bg: color.transparent,
+                    }}
+                    p="0"
+                    onPress={imageModalDisclosure.onClose}
+                    icon={<Ionicons name="close" size={24} color="white" />}
+                  ></IconButton>
+                </Box>
+                <ImageViewer
+                  enableSwipeDown
+                  failImageSource={require("./icon-404.png")}
+                  onSwipeDown={imageModalDisclosure.onClose}
+                  imageUrls={[{ url: selectedImage }]}
+                />
+              </Flex>
+            </Modal>
           </ZStack>
         </Screen>
       </View>
