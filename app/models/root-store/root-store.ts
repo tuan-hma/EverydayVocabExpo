@@ -5,10 +5,9 @@ import { FeedStoreModel } from "../feed-store/feed-store"
 /**
  * A RootStore model.
  */
-// prettier-ignore
 export const RootStoreModel = types.model("RootStore").props({
   characterStore: types.optional(CharacterStoreModel, {} as any),
-  feedStore: types.optional(FeedStoreModel, {} as any)
+  feedStore: types.optional(FeedStoreModel, {} as any),
 })
 
 /**

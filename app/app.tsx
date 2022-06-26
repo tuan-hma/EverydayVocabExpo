@@ -46,7 +46,11 @@ function App() {
   useEffect(() => {
     ;(async () => {
       await initFonts() // expo
-      setupRootStore().then(setRootStore)
+      setupRootStore().then((loadedRootStore) => {
+        setRootStore(loadedRootStore)
+        // state is automatically load from asyncStorage so we dont need to anything
+        // loadedRootStore.feedStore.getFeeds()
+      })
     })()
   }, [])
 

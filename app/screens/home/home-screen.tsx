@@ -10,6 +10,7 @@ import { NavigatorParamList } from "../../navigators"
 import * as Haptics from "expo-haptics"
 import Carousel from "react-native-snap-carousel"
 import ImageViewer from "react-native-image-zoom-viewer"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 import {
   Flex,
   VStack,
@@ -57,6 +58,7 @@ interface FeedSection {
 
 export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = observer(
   ({ navigation, route }) => {
+    const insets = useSafeAreaInsets()
     const imageModalDisclosure = useDisclose()
     const DATE_FORMAT = "YYYY-MM-DD"
     const { feedStore } = useStores()
@@ -80,7 +82,9 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
       React.useCallback(() => {
         setCongrated(false)
         if (afterPost) {
-          scheduleYesterdayResultNoti(todayFeeds)
+          scheduleYesterdayResultNoti(todayFeeds).catch((e) => {
+            console.log(e)
+          })
           setSelectedDate(moment().format(DATE_FORMAT))
           // TODO: fix this
           // sectionList?.current?.scrollToLocation({
@@ -119,12 +123,14 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
       }
       const result: number[] = []
       const duration = moment.duration(
-        moment().isoWeekday(1).diff(moment(feeds[0].id).isoWeekday(1)),
+        moment().isoWeekday(1).diff(moment(feeds[0].id).isoWeekday(1).startOf("day")),
       )
+      console.log(duration.asWeeks())
       const weeksCount = Math.floor(duration.asWeeks())
       for (let i = weeksCount; i >= 0; i--) {
         result.push(i)
       }
+      console.log(weeksCount)
       return result
     }
     // TODO impl this shit
@@ -156,7 +162,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
       setStreak(streak)
 
       // request review if streak > 2
-      if (streak >= 1) {
+      if (streak >= 2) {
         StoreReview.requestReview()
       }
       setFeedsDictionary(dictionary)
@@ -210,7 +216,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                   isSelected
                     ? {
                         linearGradient: {
-                          colors: ["#926fef", "#7751e9"],
+                          colors: [color.palette.colorful1, color.palette.colorful2],
                           start: [1, 0],
                           end: [0, 1],
                         },
@@ -290,14 +296,28 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                     pr="10px"
                     direction="row"
                     justifyContent="space-between"
-                    alignItems="flex-end"
+                    alignItems="center"
                   >
                     <Text color={color.palette.text} fontSize="md" fontWeight="bold">
                       {moment(new Date(selectedDate)).format("YYYY, dddd MMM DD")}
                     </Text>
-                    <Text color={color.palette.milderText} fontWeight="bold" fontSize="xl">
-                      {moment(firstDayOfCarousel).format("MMMM YYYY")}
-                    </Text>
+                    <HStack alignItems="center">
+                      <Text
+                        mr="10px"
+                        color={color.palette.milderText}
+                        fontWeight="bold"
+                        fontSize="xl"
+                      >
+                        {moment(firstDayOfCarousel).format("MMMM YYYY")}
+                      </Text>
+                      <CommonButton
+                        icon={require("./setting-icon.png")}
+                        // text="Setting"
+                        onClick={() => {
+                          navigation.navigate("setting")
+                        }}
+                      />
+                    </HStack>
                   </Flex>
 
                   <Box pt="5px" pb="5px">
@@ -346,7 +366,12 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                   </HStack>
                 </Box>
               </Flex>
-              <ZStack bg="#00000018" w="full" flexGrow="1" justifyContent="flex-end">
+              <ZStack
+                bg={color.palette.backgroundShade}
+                w="full"
+                flexGrow="1"
+                justifyContent="flex-end"
+              >
                 <Flex
                   // borderTopWidth="1"
                   // borderColor={color.palette.backgroundSelected}
@@ -554,6 +579,10 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
               <Actionsheet isOpen={deleteOption.isOpen} onClose={deleteOption.onClose}>
                 <Actionsheet.Content bg={color.palette.background}>
                   <Actionsheet.Item
+                    rounded="10px"
+                    _pressed={{
+                      background: color.palette.backgroundSelected,
+                    }}
                     bg={color.transparent}
                     onPressOut={() => {
                       // deleteConfirm.onOpen()
@@ -587,36 +616,40 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
               </Actionsheet>
             </Flex>
             <Modal visible={imageModalDisclosure.isOpen} transparent={true} animationType="fade">
-              <Flex bg="#000000" w="full" h="full">
-                <Box
-                  justifyContent="center"
-                  alignItems="center"
-                  bg="#222"
-                  w="35px"
-                  h="35px"
-                  p="5px"
-                  m="5px"
-                  mt="60px"
-                  ml="10px"
-                  rounded="30px"
-                >
-                  <IconButton
-                    // borderRadius="full"
-                    _pressed={{
-                      bg: color.transparent,
-                    }}
-                    p="0"
-                    onPress={imageModalDisclosure.onClose}
-                    icon={<Ionicons name="close" size={24} color="white" />}
-                  ></IconButton>
-                </Box>
+              <ZStack
+                pb={`${insets.bottom}px`}
+                pt={`${insets.top}px`}
+                bg="#000000"
+                w="full"
+                h="full"
+              >
                 <ImageViewer
                   enableSwipeDown
                   failImageSource={require("./icon-404.png")}
                   onSwipeDown={imageModalDisclosure.onClose}
                   imageUrls={[{ url: selectedImage }]}
                 />
-              </Flex>
+                <Flex alignSelf="flex-end" pr="20px" mt={`${insets.top + 20}px`}>
+                  <Box
+                    justifyContent="center"
+                    alignItems="center"
+                    bg="#222"
+                    w="35px"
+                    h="35px"
+                    rounded="30px"
+                  >
+                    <IconButton
+                      // borderRadius="full"
+                      _pressed={{
+                        bg: color.transparent,
+                      }}
+                      p="0"
+                      onPress={imageModalDisclosure.onClose}
+                      icon={<Ionicons name="close" size={24} color="white" />}
+                    ></IconButton>
+                  </Box>
+                </Flex>
+              </ZStack>
             </Modal>
           </ZStack>
         </Screen>

@@ -56,7 +56,7 @@ export function CommonButton(props: CommonButtonProps) {
 
             {props.text && (
               <Text
-                ml="10px"
+                ml={props.icon ? "10px" : "0px"}
                 shadow="9"
                 fontSize="md"
                 fontWeight="bold"

@@ -68,11 +68,13 @@ export function MainFeed(props: MainFeedProps) {
               shadow="3"
               rounded="20px"
               // borderWidth="2px"
-              borderColor="#474165"
               p="8px"
               bg={{
                 linearGradient: {
-                  colors: ["#474165", "#35334d"],
+                  colors: [
+                    color.palette.backgroundHightlight,
+                    color.palette.backgroundHightlightShade,
+                  ],
                   start: [1, 0],
                   end: [0, 1],
                 },
@@ -82,21 +84,27 @@ export function MainFeed(props: MainFeedProps) {
               <Flex direction="row" justifyContent="space-between">
                 {/* left item */}
                 <Flex pr="10px" flexGrow="1" flexShrink="2" direction="column">
-                  <Text
-                    mb="10px"
-                    color={color.palette.text}
-                    fontSize="xl"
-                    fontWeight="bold"
-                    shadow="6"
-                  >
+                  <Text mb="10px" color={color.palette.text} fontSize="xl" fontWeight="bold">
                     {mood?.name}
                   </Text>
-                  <Text shadow="3" color={color.palette.milderText} fontSize="lg" fontWeight="bold">
+                  <Text color={color.palette.milderText} fontSize="lg" fontWeight="bold">
                     {props.feed.content}
                   </Text>
                   {props.feed.image !== "" && (
                     <Image
-                      fallbackElement={<Box></Box>}
+                      fallbackElement={
+                        <Image
+                          fallbackElement={
+                            <Text color={color.palette.mildText}>😵 Sorry, Image is missing</Text>
+                          }
+                          mt="5px"
+                          h="150px"
+                          borderRadius="10px"
+                          w={`${150 * (props.feed.imageRatio ?? 1)}px`}
+                          source={{ uri: `data:image/jpeg;base64,${props.feed.imageBase64}` }}
+                          alt="post-image"
+                        />
+                      }
                       mt="5px"
                       h="150px"
                       borderRadius="10px"
@@ -108,7 +116,7 @@ export function MainFeed(props: MainFeedProps) {
                 </Flex>
                 {/* right item */}
                 <Flex justifyContent="space-between" direction="column" alignItems="flex-end">
-                  <Box shouldRasterizeIOS bg="#524b74" rounded="xl">
+                  <Box shouldRasterizeIOS bg={color.palette.backgroundSelectedMild} rounded="xl">
                     <Box
                       h="40px"
                       w="40px"

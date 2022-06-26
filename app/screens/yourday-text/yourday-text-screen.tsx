@@ -9,6 +9,7 @@ import { Feather, MaterialCommunityIcons } from "@expo/vector-icons"
 import * as ImagePicker from "expo-image-picker"
 import * as Haptics from "expo-haptics"
 import { Camera } from "expo-camera"
+import * as FileSystem from "expo-file-system"
 import {
   Flex,
   Button as NBButton,
@@ -125,14 +126,21 @@ export const YourdayTextScreen: FC<StackScreenProps<NavigatorParamList, "yourday
                 </VStack>
               </Flex>
               <Pressable
-                onPress={() => {
+                onPress={async () => {
                   Haptics.selectionAsync()
+                  let base64 = ""
+                  if (image && image.uri !== "") {
+                    base64 = await FileSystem.readAsStringAsync(image.uri, {
+                      encoding: "base64",
+                    })
+                  }
                   feedStore.addFeed({
                     id: new Date().getTime(),
                     emotion: selectedMood.code,
                     content: content,
                     image: image?.uri ?? "",
                     imageRatio: image ? image.width / image.height : 1,
+                    imageBase64: base64,
                   })
                   navigation.navigate("home", {
                     afterPost: true,

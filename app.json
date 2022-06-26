@@ -1,6 +1,6 @@
 {
   "name": "MoodyDiary",
-  "displayName": "MoodyDiary",
+  "displayName": "Moody Diary",
   "build": {
     "production": {
       "node": "14.19.3"
@@ -9,7 +9,7 @@
   "expo": {
     "name": "MoodyDiary",
     "slug": "MoodyDiary",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "splash": {
@@ -23,13 +23,14 @@
     "assetBundlePatterns": ["**/*"],
     "userInterfaceStyle": "light",
     "ios": {
-      "buildNumber": "3",
+      "buildNumber": "6",
       "supportsTablet": false,
       "bundleIdentifier": "com.tuanhma.MoodyDiary",
       "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
         "NSCameraUsageDescription": "We use camera's picture to attach photo to your note",
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "RCTAsyncStorageExcludeFromBackup": false
       }
     },
     "android": {
