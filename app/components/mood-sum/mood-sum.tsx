@@ -4,6 +4,9 @@ import { FeedSnapshot } from "../../models/feed-store/feed"
 import { color } from "../../theme"
 import { EmojiImage } from "../../utils/emoji-image"
 import { MoodModel, MoodUtil } from "../../models/mood"
+import { useStores } from "../../models"
+import { ColorThemeUtil } from "../../models/colorTheme"
+import { SettingOptionIdDefine } from "../../models/setting-option-store/setting-option"
 
 export interface MoodSumProps {
   feeds: FeedSnapshot[]
@@ -20,6 +23,10 @@ export interface MoodSumItem {
  * This component is a HOC over the built-in React Native one.
  */
 export function MoodSum(props: MoodSumProps) {
+  const { feedStore, settingOptionStore } = useStores()
+  const colorTheme = ColorThemeUtil.getColorThemeById(
+    settingOptionStore.getSettingOption(SettingOptionIdDefine.colorTheme),
+  )
   const getMoodSumResult = (feeds: FeedSnapshot[]): MoodSumItem[] => {
     const moods = MoodUtil.getMoods()
     let result: MoodSumItem[] = moods.map((m) => ({
@@ -45,7 +52,7 @@ export function MoodSum(props: MoodSumProps) {
             key={result.mood.code}
             flexDirection="row"
             p="5px"
-            bg={color.palette.backgroundSelected}
+            bg={colorTheme.palette.backgroundSelected}
             rounded="10px"
           >
             <Box
@@ -68,7 +75,7 @@ export function MoodSum(props: MoodSumProps) {
                 alt={result.mood.code}
               />
             </Box>
-            <Text ml="5px" fontWeight="bold" color={color.palette.text}>
+            <Text ml="5px" fontWeight="bold" color={colorTheme.palette.text}>
               x{result.count}
             </Text>
           </Box>

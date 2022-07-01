@@ -4,7 +4,7 @@ import { color } from "../../theme"
 import * as Haptics from "expo-haptics"
 import { useStores } from "../../models"
 import { ColorThemeUtil } from "../../models/colorTheme"
-import { SettingOptionIdDefine } from "../../models/setting-store/setting-option"
+import { SettingOptionIdDefine } from "../../models/setting-option-store/setting-option"
 export interface CommonButtonProps {
   onClick: () => void
   icon?: any
@@ -57,7 +57,7 @@ export function CommonButton(props: CommonButtonProps) {
           >
             {props.icon && (
               <Box w="40px" shadow="4">
-                <Image w="40px" h="40px" source={props.icon} alt="icon" />
+                <Image resizeMode="contain" w="40px" h="40px" source={props.icon} alt="icon" />
               </Box>
             )}
 

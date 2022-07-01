@@ -20,8 +20,8 @@ export const FeedStoreModel = types
       AsyncStorage.setItem("@feeds", jsonValue)
     },
     addFeed: (feedSnapshot: FeedSnapshot) => {
-      const jsonValue = JSON.stringify(self.feeds)
-      AsyncStorage.setItem("@feeds", jsonValue)
+      // const jsonValue = JSON.stringify(self.feeds)
+      // AsyncStorage.setItem("@feeds", jsonValue)
       self.feeds.push(feedSnapshot)
     },
     clearFeed: () => {

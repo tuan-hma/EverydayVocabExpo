@@ -8,7 +8,7 @@ import moment from "moment"
 import * as Haptics from "expo-haptics"
 import { useStores } from "../../models"
 import { ColorThemeUtil } from "../../models/colorTheme"
-import { SettingOptionIdDefine } from "../../models/setting-store/setting-option"
+import { SettingOptionIdDefine } from "../../models/setting-option-store/setting-option"
 
 export interface MainFeedProps {
   feed: FeedSnapshot

@@ -37,10 +37,12 @@ import { useColorTheme } from "../../hooks/useThemeColor"
 import { MainFeed } from "../../components/main-feed/main-feed"
 import { MoodUtil } from "../../models/mood"
 import { useStores } from "../../models"
+import * as Haptics from "expo-haptics"
 import {
   SettingOptionIdDefine,
   SettingOptionSnapshot,
-} from "../../models/setting-store/setting-option"
+} from "../../models/setting-option-store/setting-option"
+import { autorun } from "mobx"
 
 const FULL: ViewStyle = { flex: 1 }
 const CONTAINER: ViewStyle = {
@@ -64,79 +66,80 @@ interface ThemeStyleBoxProps {
 const ThemeStyleBox = (props: ThemeStyleBoxProps) => {
   return (
     <Pressable
+      onPressIn={() => {
+        Haptics.selectionAsync()
+      }}
       onPress={() => {
+        // Haptics.selectionAsync()
         props.onChanged(props.colorTheme)
       }}
     >
-      <Box
-        w="80px"
-        h="80px"
-        rounded="10px"
-        p="5px"
-        background={{
-          linearGradient: {
-            colors: [
-              props.colorTheme.palette.backgroundHightlight,
-              props.colorTheme.palette.backgroundHightlightShade,
-            ],
-            start: [1, 0],
-            end: [0, 1],
-          },
-        }}
-      >
-        <Text fontWeight="bold" color={props.colorTheme.palette.text}>
-          {props.colorTheme.name}
-        </Text>
-        <Box
-          w="50px"
-          h="20px"
-          rounded="5px"
-          p="5px"
-          background={{
-            linearGradient: {
-              colors: [props.colorTheme.palette.colorful1, props.colorTheme.palette.colorful2],
-              start: [1, 0],
-              end: [0, 1],
-            },
-          }}
-        ></Box>
-      </Box>
+      {({ isHovered, isFocused, isPressed }) => {
+        return (
+          <Box
+            w="80px"
+            h="80px"
+            rounded="10px"
+            p="5px"
+            style={{
+              transform: [
+                {
+                  scale: isPressed ? 0.96 : 1,
+                },
+              ],
+            }}
+            background={{
+              linearGradient: {
+                colors: [
+                  props.colorTheme.palette.backgroundHightlight,
+                  props.colorTheme.palette.backgroundHightlightShade,
+                ],
+                start: [1, 0],
+                end: [0, 1],
+              },
+            }}
+          >
+            <Text fontWeight="bold" color={props.colorTheme.palette.text}>
+              {props.colorTheme.name}
+            </Text>
+            <Box
+              w="50px"
+              h="20px"
+              rounded="5px"
+              p="5px"
+              background={{
+                linearGradient: {
+                  colors: [props.colorTheme.palette.colorful1, props.colorTheme.palette.colorful2],
+                  start: [1, 0],
+                  end: [0, 1],
+                },
+              }}
+            ></Box>
+          </Box>
+        )
+      }}
     </Pressable>
   )
 }
 
 export const SettingScreen: FC<StackScreenProps<NavigatorParamList, "setting">> = observer(
   ({ navigation }) => {
-    const [notification, setNotification] = useState<Notifications.Notification | null>(null)
     const notificationListener = useRef<Subscription>()
     const responseListener = useRef<Subscription>()
     const [isNoti, setIsNoti] = useState<boolean>(false)
-    const { settingOptionStore } = useStores()
+    const { settingOptionStore, feedStore } = useStores()
     const colorTheme = ColorThemeUtil.getColorThemeById(
       settingOptionStore.getSettingOption(SettingOptionIdDefine.colorTheme),
     )
 
     useEffect(() => {
-      // console.log("run this")
-      SettingState.isDailySummary().then((result) => setIsNoti(result))
+      console.log("SettingScreen useEffect")
+      setIsNoti(!isNoti)
+    }, [settingOptionStore])
 
-      notificationListener.current = Notifications.addNotificationReceivedListener(
-        (notification) => {
-          setNotification(notification)
-        },
-      )
-
-      responseListener.current = Notifications.addNotificationResponseReceivedListener(
-        (response) => {
-          console.log(response)
-        },
-      )
-
-      return () => {
-        Notifications.removeNotificationSubscription(notificationListener.current)
-        Notifications.removeNotificationSubscription(responseListener.current)
-      }
-    }, [])
+    autorun(() => {
+      console.log("Energy level:", colorTheme.name)
+    })
 
     return (
       <View testID="WelcomeScreen" style={FULL}>
@@ -186,11 +189,18 @@ export const SettingScreen: FC<StackScreenProps<NavigatorParamList, "setting">> 
                 {ColorThemeUtil.colorThemes.map((theme) =>
                   ThemeStyleBox({
                     onChanged: (selectedPalette: ColorTheme) => {
+                      // feedStore.addFeed({
+                      //   id: new Date().getTime(),
+                      //   emotion: "happy",
+                      //   content: "content",
+                      //   image: "",
+                      //   imageRatio: 1,
+                      //   imageBase64: "",
+                      // })
                       settingOptionStore.setSettingOption({
                         id: SettingOptionIdDefine.colorTheme,
-                        value: selectedPalette.id,
+                        settingValue: selectedPalette.id,
                       })
-                      setIsNoti(!isNoti)
                     },
                     colorTheme: theme,
                   }),

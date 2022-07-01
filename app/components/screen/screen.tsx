@@ -3,6 +3,9 @@ import { KeyboardAvoidingView, Platform, ScrollView, StatusBar, View } from "rea
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { ScreenProps } from "./screen.props"
 import { isNonScrolling, offsets, presets } from "./screen.presets"
+import { useStores } from "../../models"
+import { ColorThemeUtil } from "../../models/colorTheme"
+import { SettingOptionIdDefine } from "../../models/setting-option-store/setting-option"
 
 const isIos = Platform.OS === "ios"
 
@@ -12,14 +15,17 @@ function ScreenWithoutScrolling(props: ScreenProps) {
   const style = props.style || {}
   const backgroundStyle = props.backgroundColor ? { backgroundColor: props.backgroundColor } : {}
   const insetStyle = { paddingTop: props.unsafe ? 0 : insets.top }
-
+  const { settingOptionStore } = useStores()
+  const colorTheme = ColorThemeUtil.getColorThemeById(
+    settingOptionStore.getSettingOption(SettingOptionIdDefine.colorTheme),
+  )
   return (
     <KeyboardAvoidingView
       style={[preset.outer, backgroundStyle]}
       behavior={isIos ? "padding" : undefined}
       keyboardVerticalOffset={offsets[props.keyboardOffset || "none"]}
     >
-      <StatusBar barStyle={props.statusBar || "light-content"} />
+      <StatusBar barStyle={colorTheme.palette.darkLightContent} />
       <View style={[preset.inner, style, insetStyle]}>{props.children}</View>
     </KeyboardAvoidingView>
   )
@@ -31,14 +37,17 @@ function ScreenWithScrolling(props: ScreenProps) {
   const style = props.style || {}
   const backgroundStyle = props.backgroundColor ? { backgroundColor: props.backgroundColor } : {}
   const insetStyle = { paddingTop: props.unsafe ? 0 : insets.top }
-
+  const { settingOptionStore } = useStores()
+  const colorTheme = ColorThemeUtil.getColorThemeById(
+    settingOptionStore.getSettingOption(SettingOptionIdDefine.colorTheme),
+  )
   return (
     <KeyboardAvoidingView
       style={[preset.outer, backgroundStyle]}
       behavior={isIos ? "padding" : undefined}
       keyboardVerticalOffset={offsets[props.keyboardOffset || "none"]}
     >
-      <StatusBar barStyle={props.statusBar || "light-content"} />
+      <StatusBar barStyle={colorTheme.palette.darkLightContent} />
       <View style={[preset.outer, backgroundStyle, insetStyle]}>
         <ScrollView
           style={[preset.outer, backgroundStyle]}

@@ -45,7 +45,8 @@ import { MoodSum } from "../../components/mood-sum/mood-sum"
 import { CommonButton } from "../../components/common-button/common-button"
 import * as StoreReview from "expo-store-review"
 import { ColorThemeUtil } from "../../models/colorTheme"
-import { SettingOptionIdDefine } from "../../models/setting-store/setting-option"
+import { SettingOptionIdDefine } from "../../models/setting-option-store/setting-option"
+import { autorun } from "mobx"
 
 const FULL: ViewStyle = { flex: 1 }
 
@@ -61,17 +62,16 @@ interface FeedSection {
 export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = observer(
   ({ navigation, route }) => {
     const { feedStore, settingOptionStore } = useStores()
+    autorun(() => {
+      console.log("Energy level:", colorTheme.name)
+    })
     const colorTheme = ColorThemeUtil.getColorThemeById(
       settingOptionStore.getSettingOption(SettingOptionIdDefine.colorTheme),
     )
     const insets = useSafeAreaInsets()
     const imageModalDisclosure = useDisclose()
     const DATE_FORMAT = "YYYY-MM-DD"
-    const notificationListener = useRef()
-    const responseListener = useRef()
-    const cancelDeleteRef = React.useRef(null)
     const deleteOption = useDisclose()
-    const deleteConfirm = useDisclose()
     const [selectedDate, setSelectedDate] = useState(moment().format(DATE_FORMAT))
     const [firstDayOfCarousel, setFirstDayOfCarousel] = useState(new Date())
     const [streak, setStreak] = useState(0)
@@ -79,14 +79,12 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
     const todayFeeds = feedStore.feeds.filter(
       (feed) => moment(feed.id).format(DATE_FORMAT) === selectedDate,
     )
-
-    const afterPost: boolean | undefined = route.params?.afterPost
-    const [congrated, setCongrated] = useState(false)
+    const isRequireAfterPostAction =
+      settingOptionStore.getSettingOption(SettingOptionIdDefine.shouldActionAfterPost) === "true"
     const sectionList = useRef<SectionList>()
     useFocusEffect(
       React.useCallback(() => {
-        setCongrated(false)
-        if (afterPost) {
+        if (isRequireAfterPostAction) {
           scheduleYesterdayResultNoti(todayFeeds).catch((e) => {
             console.log(e)
           })
@@ -179,7 +177,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
 
     useEffect(() => {
       calculateDictionaryFromFeeds(feedStore.feeds)
-    }, [feedStore.feeds.length])
+    }, [feedStore.feeds.length, settingOptionStore.settingOptions])
 
     // const feedsDictionary = getDictionaryFromFeeds(feedStore.feeds)
     // const sectionData: FeedSection[] = Array.from(feedsDictionary.entries()).map((source) => {
@@ -316,7 +314,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                         {moment(firstDayOfCarousel).format("MMMM YYYY")}
                       </Text>
                       <CommonButton
-                        icon={require("./setting-icon.png")}
+                        icon={require("./flag-icon.png")}
                         // text="Setting"
                         onClick={() => {
                           navigation.navigate("setting")
@@ -479,7 +477,18 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                   )}
                 </Flex>
                 <Box shadow="9" pt="10px" pb="20px" pl="10px" alignSelf="flex-start">
-                  <Pressable onPress={() => {}}>
+                  <Pressable
+                    onPress={() => {
+                      // feedStore.addFeed({
+                      //   id: new Date().getTime(),
+                      //   emotion: "happy",
+                      //   content: "content",
+                      //   image: "",
+                      //   imageRatio: 1,
+                      //   imageBase64: "",
+                      // })
+                    }}
+                  >
                     {({ isHovered, isFocused, isPressed }) => {
                       return (
                         <Box
@@ -555,7 +564,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                     icon={settingIcon}
                   />
                 </Box> */}
-                {afterPost && !congrated && todayFeeds.length === 1 && (
+                {isRequireAfterPostAction && todayFeeds.length === 1 && (
                   <AspectRatio alignSelf="center" mb="30%" w="full" ratio={1 / 1}>
                     <VStack
                       bg={colorTheme.palette.backgroundSelected}
@@ -575,7 +584,10 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                       <LottieView
                         speed={0.8}
                         onAnimationFinish={() => {
-                          setCongrated(true)
+                          settingOptionStore.setSettingOption({
+                            id: SettingOptionIdDefine.shouldActionAfterPost,
+                            value: "false",
+                          })
                         }}
                         loop={false}
                         autoPlay

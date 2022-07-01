@@ -35,6 +35,7 @@ import { EmojiImage } from "../../utils/emoji-image"
 import { MainButton } from "../../components/main-button/main-button"
 import { useStores } from "../../models"
 import { MoodModel } from "../../models/mood"
+import { SettingOptionIdDefine } from "../../models/setting-option-store/setting-option"
 
 const addIcon = require("../home/add-icon.png")
 
@@ -51,7 +52,7 @@ export const YourdayTextScreen: FC<StackScreenProps<NavigatorParamList, "yourday
     const [image, setImage] = useState(null)
     const [content, setContent] = useState("")
     const [hasPermission, setHasPermission] = useState(null)
-    const { feedStore } = useStores()
+    const { feedStore, settingOptionStore } = useStores()
 
     const onImageTaken = (imageData: any) => {
       setImage(imageData)
@@ -141,6 +142,11 @@ export const YourdayTextScreen: FC<StackScreenProps<NavigatorParamList, "yourday
                     image: image?.uri ?? "",
                     imageRatio: image ? image.width / image.height : 1,
                     imageBase64: base64,
+                  })
+
+                  settingOptionStore.setSettingOption({
+                    id: SettingOptionIdDefine.shouldActionAfterPost,
+                    value: "true",
                   })
                   navigation.navigate("home", {
                     afterPost: true,

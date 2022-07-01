@@ -15,6 +15,7 @@ export const FeedModel = types.model("Feed").props({
 
 type FeedType = Instance<typeof FeedModel>
 export interface Feed extends FeedType {}
+
 type FeedSnapshotType = SnapshotOut<typeof FeedModel>
 export interface FeedSnapshot extends FeedSnapshotType {}
 export const createFeedDefaultModel = () => types.optional(FeedModel, {})

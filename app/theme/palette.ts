@@ -1,3 +1,5 @@
+import { ColorPalette } from "../models/colorTheme"
+
 export const palette = {
   black: "#1d1d1d",
   white: "#ffffff",
@@ -10,7 +12,8 @@ export const palette = {
   deepPurple: "#5D2555",
 }
 
-export const paletteGreen = {
+export const paletteGreen: ColorPalette = {
+  darkLightContent: "dark-content",
   background: "#ffffff",
   backgroundShade: "#ffffff",
   text: "#46311c",
@@ -26,7 +29,8 @@ export const paletteGreen = {
   colorful2: "#76974a",
 }
 
-export const paletteDark = {
+export const paletteDark: ColorPalette = {
+  darkLightContent: "light-content",
   background: "#2e2d42",
   backgroundShade: "#29283c",
   text: "#ffffff",

@@ -1,6 +1,7 @@
 import { paletteDark, paletteGreen } from "../theme/palette"
 
 export interface ColorPalette {
+  darkLightContent: "dark-content" | "light-content"
   background: string
   backgroundShade: string
   text: string

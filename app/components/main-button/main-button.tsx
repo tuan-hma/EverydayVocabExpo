@@ -3,7 +3,7 @@ import { Box, Pressable, Text } from "native-base"
 import * as Haptics from "expo-haptics"
 import { useStores } from "../../models"
 import { ColorThemeUtil } from "../../models/colorTheme"
-import { SettingOptionIdDefine } from "../../models/setting-store/setting-option"
+import { SettingOptionIdDefine } from "../../models/setting-option-store/setting-option"
 
 export interface MainButtonProps {
   title: string

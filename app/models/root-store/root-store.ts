@@ -1,7 +1,7 @@
 import { Instance, SnapshotOut, types } from "mobx-state-tree"
 import { CharacterStoreModel } from "../character-store/character-store"
 import { FeedStoreModel } from "../feed-store/feed-store"
-import { SettingOptionStoreModel } from "../setting-store/setting-option-store"
+import { SettingOptionStoreModel } from "../setting-option-store/setting-option-store"
 
 /**
  * A RootStore model.

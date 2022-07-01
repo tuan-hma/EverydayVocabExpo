@@ -10,28 +10,23 @@ export const SettingOptionStoreModel = types
   .props({
     settingOptions: types.optional(types.array(SettingOptionModel), []),
   })
-  .extend(withEnvironment)
+  // .extend(withEnvironment)
   .actions((self) => ({
-    getSettingOption: (optionId: string): string | undefined => {
-      console.log(
-        "getSettingOption",
-        optionId,
-        ": ",
-        self.settingOptions.find((a) => a.id === optionId)?.value,
-      )
-      return self.settingOptions.find((a) => a.id === optionId)?.value
-    },
-    saveSettingOptions: (settingOptionSnapshot: SettingOptionSnapshot[]) => {
-      self.settingOptions.replace(settingOptionSnapshot)
-    },
     setSettingOption: (settingOptionSnapshot: SettingOptionSnapshot) => {
-      self.settingOptions.replace([settingOptionSnapshot])
+      console.log("this called")
+      // self.settingOptions.replace([settingOptionSnapshot])
+      // self.settingOptions.clear()
+      const savedValue = self.settingOptions.find((a) => a.id === settingOptionSnapshot.id)
+      if (savedValue) {
+        savedValue.settingValue = settingOptionSnapshot.settingValue
+      } else {
+        self.settingOptions.push(settingOptionSnapshot)
+      }
     },
-    clearSettingOption: () => {
-      self.settingOptions.clear()
-    },
-    deleteSettingOption: (settingOptionSnapshot: SettingOptionSnapshot) => {
-      self.settingOptions.remove(settingOptionSnapshot)
+  }))
+  .views((self) => ({
+    getSettingOption: (optionId: string): string | undefined => {
+      return self.settingOptions.find((a) => a.id === optionId)?.settingValue
     },
   }))
 
