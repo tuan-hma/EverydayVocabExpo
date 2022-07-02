@@ -24,25 +24,16 @@ import {
   Switch,
   ScrollView,
 } from "native-base"
-import { SelectableBox } from "../../components/selectable-box/selectable-box"
-import { MaterialCommunityIcons } from "@expo/vector-icons"
+
 import * as Notifications from "expo-notifications"
 import { Subscription } from "expo-modules-core"
-import { CommonButton } from "../../components/common-button/common-button"
-import moment from "moment"
-import { SettingState } from "../../utils/setting-state"
-import { palette, paletteGreen } from "../../theme/palette"
+
 import { ColorTheme, ColorThemeUtil } from "../../models/colorTheme"
-import { useColorTheme } from "../../hooks/useThemeColor"
 import { MainFeed } from "../../components/main-feed/main-feed"
 import { MoodUtil } from "../../models/mood"
 import { useStores } from "../../models"
 import * as Haptics from "expo-haptics"
-import {
-  SettingOptionIdDefine,
-  SettingOptionSnapshot,
-} from "../../models/setting-option-store/setting-option"
-import { autorun } from "mobx"
+import { SettingOptionIdDefine } from "../../models/setting-option-store/setting-option"
 
 const FULL: ViewStyle = { flex: 1 }
 const CONTAINER: ViewStyle = {
@@ -61,6 +52,7 @@ Notifications.setNotificationHandler({
 interface ThemeStyleBoxProps {
   onChanged: (ColorTheme) => void
   colorTheme: ColorTheme
+  isSelected: boolean
 }
 
 const ThemeStyleBox = (props: ThemeStyleBoxProps) => {
@@ -77,6 +69,8 @@ const ThemeStyleBox = (props: ThemeStyleBoxProps) => {
       {({ isHovered, isFocused, isPressed }) => {
         return (
           <Box
+            // borderWidth={props.isSelected ? "2px" : "0px"}
+            // borderColor={props.colorTheme.palette.text}
             w="80px"
             h="80px"
             rounded="10px"
@@ -153,7 +147,7 @@ export const SettingScreen: FC<StackScreenProps<NavigatorParamList, "setting">> 
               icon={<ChevronLeftIcon h="60px" w="60px" />}
             ></IconButton>
             <Text color={colorTheme.palette.text} fontWeight="bold" fontSize="4xl">
-              Setting ⚙️
+              Customize
             </Text>
           </Flex>
           {/* <Flex pl="5" pr="5" mt="20px">
@@ -184,6 +178,9 @@ export const SettingScreen: FC<StackScreenProps<NavigatorParamList, "setting">> 
               <HStack space="md">
                 {ColorThemeUtil.colorThemes.map((theme) =>
                   ThemeStyleBox({
+                    isSelected:
+                      theme.id ===
+                      settingOptionStore.getSettingOption(SettingOptionIdDefine.colorTheme),
                     onChanged: (selectedPalette: ColorTheme) => {
                       // feedStore.addFeed({
                       //   id: new Date().getTime(),

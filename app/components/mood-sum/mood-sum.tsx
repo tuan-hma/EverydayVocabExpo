@@ -49,7 +49,7 @@ export function MoodSum(props: MoodSumProps) {
           <Box
             shouldRasterizeIOS
             renderToHardwareTextureAndroid
-            key={result.mood.code}
+            key={"mood-sum-" + result.mood.code}
             flexDirection="row"
             p="5px"
             bg={colorTheme.palette.backgroundSelected}

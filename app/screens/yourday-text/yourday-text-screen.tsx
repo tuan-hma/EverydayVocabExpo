@@ -36,6 +36,7 @@ import { MainButton } from "../../components/main-button/main-button"
 import { useStores } from "../../models"
 import { MoodModel } from "../../models/mood"
 import { SettingOptionIdDefine } from "../../models/setting-option-store/setting-option"
+import { ColorThemeUtil } from "../../models/colorTheme"
 
 const addIcon = require("../home/add-icon.png")
 
@@ -53,6 +54,9 @@ export const YourdayTextScreen: FC<StackScreenProps<NavigatorParamList, "yourday
     const [content, setContent] = useState("")
     const [hasPermission, setHasPermission] = useState(null)
     const { feedStore, settingOptionStore } = useStores()
+    const colorTheme = ColorThemeUtil.getColorThemeById(
+      settingOptionStore.getSettingOption(SettingOptionIdDefine.colorTheme),
+    )
 
     const onImageTaken = (imageData: any) => {
       setImage(imageData)
@@ -96,7 +100,9 @@ export const YourdayTextScreen: FC<StackScreenProps<NavigatorParamList, "yourday
 
     return (
       <View testID="WelcomeScreen" style={FULL}>
-        <GradientBackground colors={[color.palette.background, color.palette.background]} />
+        <GradientBackground
+          colors={[colorTheme.palette.background, colorTheme.palette.background]}
+        />
 
         <Screen style={CONTAINER} preset="fixed" backgroundColor={color.transparent}>
           {/* <ZStack>
@@ -109,7 +115,7 @@ export const YourdayTextScreen: FC<StackScreenProps<NavigatorParamList, "yourday
                 <IconButton
                   borderRadius="full"
                   _icon={{
-                    color: "white",
+                    color: colorTheme.palette.text,
                     size: "md",
                   }}
                   w="40px"
@@ -120,7 +126,12 @@ export const YourdayTextScreen: FC<StackScreenProps<NavigatorParamList, "yourday
                 <VStack>
                   <HStack h="80px" space={3} maxW="100%" alignItems="center">
                     {EmotionGrid(selectedMood.image)}
-                    <Text shadow="3" color="white" fontWeight="bold" fontSize="2xl">
+                    <Text
+                      shadow="3"
+                      color={colorTheme.palette.text}
+                      fontWeight="bold"
+                      fontSize="2xl"
+                    >
                       {selectedMood.name}
                     </Text>
                   </HStack>
@@ -171,7 +182,7 @@ export const YourdayTextScreen: FC<StackScreenProps<NavigatorParamList, "yourday
                       }}
                       bg={{
                         linearGradient: {
-                          colors: ["#926fef", "#7751e9"],
+                          colors: [colorTheme.palette.colorful1, colorTheme.palette.colorful2],
                           start: [1, 0],
                           end: [0, 1],
                         },
@@ -202,7 +213,7 @@ export const YourdayTextScreen: FC<StackScreenProps<NavigatorParamList, "yourday
 
             <Flex flex="1" pl="5" pr="5" pb="20px">
               <Flex direction="row" alignItems="flex-end" justifyContent="space-between">
-                <Text shadow="3" color="white" fontWeight="bold" fontSize="xl">
+                <Text shadow="3" color={colorTheme.palette.text} fontWeight="bold" fontSize="xl">
                   What's going on ?
                 </Text>
                 <HStack>
@@ -211,13 +222,13 @@ export const YourdayTextScreen: FC<StackScreenProps<NavigatorParamList, "yourday
                     // borderRadius="full"
                     p="0"
                     onPress={() => navigation.navigate("camera", { onGoBack: onImageTaken })}
-                    icon={<Feather name="camera" size={30} color={color.palette.mildText} />}
+                    icon={<Feather name="camera" size={30} color={colorTheme.palette.mildText} />}
                   ></IconButton>
                   <IconButton
                     // borderRadius="full"
                     p="0"
                     onPress={() => pickImage()}
-                    icon={<Feather name="image" size={30} color={color.palette.mildText} />}
+                    icon={<Feather name="image" size={30} color={colorTheme.palette.mildText} />}
                   ></IconButton>
                 </HStack>
               </Flex>
@@ -232,12 +243,12 @@ export const YourdayTextScreen: FC<StackScreenProps<NavigatorParamList, "yourday
                   _focus={{
                     bg: "#00000020",
                   }}
-                  selectionColor={color.palette.text}
+                  selectionColor={colorTheme.palette.text}
                   borderWidth="0"
                   bg="#00000020"
                   focusOutlineColor="amber.300"
                   rounded="xl"
-                  color={color.palette.text}
+                  color={colorTheme.palette.text}
                   fontSize="xl"
                   value={content}
                   onChangeText={(text) => {

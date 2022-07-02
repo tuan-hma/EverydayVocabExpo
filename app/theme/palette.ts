@@ -22,7 +22,7 @@ export const paletteGreen: ColorPalette = {
   accent: "#f9d866",
   accentShade: "#ffc76f",
   backgroundSelected: "#ecf0e7",
-  backgroundSelectedMild: "#dfe4da",
+  backgroundSelectedMild: "#fafff3",
   backgroundHightlight: "#ecf0e7",
   backgroundHightlightShade: "#ecf0e7",
   colorful1: "#a0c174",
@@ -42,6 +42,23 @@ export const paletteDark: ColorPalette = {
   backgroundHightlight: "#474165",
   backgroundHightlightShade: "#35334d",
   backgroundSelectedMild: "#524b74",
+  colorful1: "#926fef",
+  colorful2: "#7751e9",
+}
+
+export const paletteLimited1: ColorPalette = {
+  darkLightContent: "dark-content",
+  background: "#f4f8ff",
+  backgroundShade: "#f4f8ff",
+  text: "#0f0629",
+  mildText: "#423d5a",
+  milderText: "#524b74",
+  accent: "#f9d866",
+  accentShade: "#ffc76f",
+  backgroundSelected: "#e9e8fb",
+  backgroundHightlight: "#e9e8fb",
+  backgroundHightlightShade: "#e9e8fb",
+  backgroundSelectedMild: "#d5d3ef",
   colorful1: "#926fef",
   colorful2: "#7751e9",
 }

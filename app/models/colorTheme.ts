@@ -1,4 +1,4 @@
-import { paletteDark, paletteGreen } from "../theme/palette"
+import { paletteDark, paletteGreen, paletteLimited1 } from "../theme/palette"
 
 export interface ColorPalette {
   darkLightContent: "dark-content" | "light-content"
@@ -21,6 +21,7 @@ export interface ColorTheme {
   id: string
   name: string
   palette: ColorPalette
+  requireStreak: number
 }
 
 export class ColorThemeUtil {
@@ -29,11 +30,19 @@ export class ColorThemeUtil {
       id: "moodyViolet",
       name: "Moody Violet",
       palette: paletteDark,
+      requireStreak: 0,
+    },
+    {
+      id: "royalOrchid",
+      name: "Modern Orchid",
+      palette: paletteLimited1,
+      requireStreak: 0,
     },
     {
       id: "lightGarden",
       name: "Light Garden",
       palette: paletteGreen,
+      requireStreak: 3,
     },
   ]
 

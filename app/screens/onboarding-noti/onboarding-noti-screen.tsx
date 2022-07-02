@@ -47,7 +47,7 @@ export const OnboardingNotiScreen: FC<
     <View testID="WelcomeScreen" style={FULL}>
       <GradientBackground colors={[color.palette.background, color.palette.background]} />
 
-      <Screen style={CONTAINER} preset="fixed" backgroundColor={color.transparent}>
+      <Screen style={CONTAINER} preset="scroll" backgroundColor={color.transparent}>
         {/* <ZStack>
             <Image mt="30px" w="full" h="220px" source={wavyBg} />
             <Box mt="230px" w="full" h="900px" backgroundColor="#fcf6ff"></Box>

@@ -29,6 +29,9 @@ import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { EmojiImage } from "../../utils/emoji-image"
 import { MainButton } from "../../components/main-button/main-button"
 import { MoodModel, MoodUtil } from "../../models/mood"
+import { useStores } from "../../models"
+import { ColorThemeUtil } from "../../models/colorTheme"
+import { SettingOptionIdDefine } from "../../models/setting-option-store/setting-option"
 
 const FULL: ViewStyle = { flex: 1 }
 const CONTAINER: ViewStyle = {
@@ -44,12 +47,16 @@ export const YourdayScreen: FC<StackScreenProps<NavigatorParamList, "yourday">> 
     const [selectedLevel, setSelectedLevel] = useState(0)
     const [selectedEmoji, setSelectedEmoji] = useState<MoodModel | null>(null)
     const moods = MoodUtil.getMoods()
+    const { settingOptionStore } = useStores()
+    const colorTheme = ColorThemeUtil.getColorThemeById(
+      settingOptionStore.getSettingOption(SettingOptionIdDefine.colorTheme),
+    )
 
     function EmotionGrid(mood: MoodModel) {
       const isSelected = mood === selectedEmoji
       return (
         <Pressable
-          key={mood.code}
+          key={"your-day-mood-" + mood.code}
           alignItems="center"
           flexBasis="33.33%"
           onPress={() => {
@@ -69,7 +76,7 @@ export const YourdayScreen: FC<StackScreenProps<NavigatorParamList, "yourday">> 
                 }}
                 w="100px"
                 h="100px"
-                background={isSelected ? color.palette.backgroundSelected : color.transparent}
+                background={isSelected ? colorTheme.palette.backgroundSelected : color.transparent}
                 borderRadius="30px"
                 p="5px"
                 alignItems="center"
@@ -108,7 +115,9 @@ export const YourdayScreen: FC<StackScreenProps<NavigatorParamList, "yourday">> 
 
     return (
       <View testID="WelcomeScreen" style={FULL}>
-        <GradientBackground colors={[color.palette.background, color.palette.background]} />
+        <GradientBackground
+          colors={[colorTheme.palette.background, colorTheme.palette.background]}
+        />
 
         <Screen style={CONTAINER} preset="fixed" backgroundColor={color.transparent}>
           {/* <ZStack>
@@ -119,7 +128,7 @@ export const YourdayScreen: FC<StackScreenProps<NavigatorParamList, "yourday">> 
             <IconButton
               borderRadius="full"
               _icon={{
-                color: "white",
+                color: colorTheme.palette.text,
                 size: "md",
               }}
               w="40px"
@@ -127,12 +136,12 @@ export const YourdayScreen: FC<StackScreenProps<NavigatorParamList, "yourday">> 
               onPress={() => navigation.navigate("home")}
               icon={<ChevronLeftIcon h="60px" w="60px" />}
             ></IconButton>
-            <Text shadow="3" color="white" fontWeight="bold" fontSize="4xl">
+            <Text shadow="3" color={colorTheme.palette.text} fontWeight="bold" fontSize="4xl">
               Your day
             </Text>
           </Flex>
           <Flex pl="5" pr="5" mt="20px">
-            <Text shadow="3" color="white" fontWeight="bold" fontSize="xl">
+            <Text shadow="3" color={colorTheme.palette.text} fontWeight="bold" fontSize="xl">
               How is your feeling right now ?
             </Text>
             <VStack mt="10px" mb="10px">

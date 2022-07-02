@@ -46,7 +46,6 @@ import { CommonButton } from "../../components/common-button/common-button"
 import * as StoreReview from "expo-store-review"
 import { ColorThemeUtil } from "../../models/colorTheme"
 import { SettingOptionIdDefine } from "../../models/setting-option-store/setting-option"
-import { autorun } from "mobx"
 
 const FULL: ViewStyle = { flex: 1 }
 
@@ -206,7 +205,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
             }
           }}
           flexBasis="14.28%"
-          key={date.getDay()}
+          key={date.getDate()}
         >
           {({ isHovered, isFocused, isPressed }) => {
             return (
@@ -248,7 +247,13 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                   rounded="full"
                 ></Box>
                 <Text
-                  color={isFuture ? colorTheme.palette.mildText : colorTheme.palette.text}
+                  color={
+                    isFuture
+                      ? colorTheme.palette.mildText
+                      : isSelected
+                      ? "white"
+                      : colorTheme.palette.text
+                  }
                   fontSize="lg"
                   fontWeight="bold"
                 >
@@ -263,7 +268,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
 
     const _renderItem = ({ item, index }) => {
       return (
-        <HStack>
+        <HStack key={"weekhead_" + index}>
           {[...Array(7).keys()].map((dateNum) =>
             DayPick(
               moment()
@@ -319,13 +324,42 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                       >
                         {moment(firstDayOfCarousel).format("MMMM YYYY")}
                       </Text>
-                      <CommonButton
-                        icon={require("./flag-icon.png")}
+                      <Pressable
+                        onPress={() => {
+                          Haptics.selectionAsync()
+                          navigation.navigate("setting")
+                        }}
+                      >
+                        <Box
+                          // background={colorTheme.palette.backgroundSelected}
+                          // borderWidth="1px"
+                          // rounded="30px"
+                          w="50px"
+                          h="50px"
+                          // shadow="3"
+                        >
+                          <LottieView
+                            colorFilters={[
+                              { keypath: "*.*.Color", color: colorTheme.palette.accent },
+                            ]}
+                            autoPlay
+                            loop={true}
+                            // eslint-disable-next-line react-native/no-inline-styles
+                            style={{
+                              flex: 1,
+                            }}
+                            // Find more Lottie files at https://lottiefiles.com/featured
+                            source={require("./color-spin.json")}
+                          />
+                        </Box>
+                      </Pressable>
+                      {/* <CommonButton
+                        icon={require("./cog-icon.png")}
                         // text="Setting"
                         onClick={() => {
                           navigation.navigate("setting")
                         }}
-                      />
+                      /> */}
                     </HStack>
                   </Flex>
 
@@ -455,7 +489,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                         // setSelectedDate(item.section.title)
                         return (
                           <Box
-                            key={(item.item as FeedSnapshot).id as number}
+                            key={"main-feed-" + (item.item as FeedSnapshot).id}
                             renderToHardwareTextureAndroid
                             shouldRasterizeIOS
                             // maxW={Dimensions.get("window").width - 20}
@@ -640,7 +674,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                       )
                     }}
                   >
-                    <Text fontSize="md" fontWeight="bold" color="white">
+                    <Text fontSize="md" fontWeight="bold" color={colorTheme.palette.text}>
                       Delete
                     </Text>
                   </Actionsheet.Item>
