@@ -62,9 +62,6 @@ interface FeedSection {
 export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = observer(
   ({ navigation, route }) => {
     const { feedStore, settingOptionStore } = useStores()
-    autorun(() => {
-      console.log("Energy level:", colorTheme.name)
-    })
     const colorTheme = ColorThemeUtil.getColorThemeById(
       settingOptionStore.getSettingOption(SettingOptionIdDefine.colorTheme),
     )
@@ -76,6 +73,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
     const [firstDayOfCarousel, setFirstDayOfCarousel] = useState(new Date())
     const [streak, setStreak] = useState(0)
     const [selectedImage, setSelectedImage] = useState("")
+    const [shouldCongrate, setShouldCongrate] = useState(false)
     const todayFeeds = feedStore.feeds.filter(
       (feed) => moment(feed.id).format(DATE_FORMAT) === selectedDate,
     )
@@ -84,11 +82,21 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
     const sectionList = useRef<SectionList>()
     useFocusEffect(
       React.useCallback(() => {
+        console.log(
+          "isRequireAfterPostAction:",
+          settingOptionStore.getSettingOption(SettingOptionIdDefine.shouldActionAfterPost),
+        )
         if (isRequireAfterPostAction) {
           scheduleYesterdayResultNoti(todayFeeds).catch((e) => {
             console.log(e)
           })
+          console.log("change selectedDate")
           setSelectedDate(moment().format(DATE_FORMAT))
+          setShouldCongrate(true)
+          settingOptionStore.setSettingOption({
+            id: SettingOptionIdDefine.shouldActionAfterPost,
+            settingValue: "false",
+          })
           // TODO: fix this
           // sectionList?.current?.scrollToLocation({
           //   sectionIndex: 0,
@@ -128,12 +136,10 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
       const duration = moment.duration(
         moment().isoWeekday(1).diff(moment(feeds[0].id).isoWeekday(1).startOf("day")),
       )
-      console.log(duration.asWeeks())
       const weeksCount = Math.floor(duration.asWeeks())
       for (let i = weeksCount; i >= 0; i--) {
         result.push(i)
       }
-      console.log(weeksCount)
       return result
     }
     // TODO impl this shit
@@ -564,43 +570,42 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                     icon={settingIcon}
                   />
                 </Box> */}
-                {isRequireAfterPostAction && todayFeeds.length === 1 && (
-                  <AspectRatio alignSelf="center" mb="30%" w="full" ratio={1 / 1}>
-                    <VStack
-                      bg={colorTheme.palette.backgroundSelected}
-                      rounded="30px"
-                      w="full"
-                      h="full"
-                    >
-                      <Text
-                        mt="30px"
-                        textAlign="center"
-                        color={colorTheme.palette.text}
-                        fontWeight="bold"
-                        fontSize="2xl"
+                {shouldCongrate &&
+                  selectedDate === moment().format(DATE_FORMAT) &&
+                  todayFeeds.length === 1 && (
+                    <AspectRatio alignSelf="center" mb="30%" w="full" ratio={1 / 1}>
+                      <VStack
+                        bg={colorTheme.palette.backgroundSelected}
+                        rounded="30px"
+                        w="full"
+                        h="full"
                       >
-                        First post of the day, keep going
-                      </Text>
-                      <LottieView
-                        speed={0.8}
-                        onAnimationFinish={() => {
-                          settingOptionStore.setSettingOption({
-                            id: SettingOptionIdDefine.shouldActionAfterPost,
-                            value: "false",
-                          })
-                        }}
-                        loop={false}
-                        autoPlay
-                        // eslint-disable-next-line react-native/no-inline-styles
-                        style={{
-                          flex: 1,
-                        }}
-                        // Find more Lottie files at https://lottiefiles.com/featured
-                        source={require("./congrate.json")}
-                      />
-                    </VStack>
-                  </AspectRatio>
-                )}
+                        <Text
+                          mt="30px"
+                          textAlign="center"
+                          color={colorTheme.palette.text}
+                          fontWeight="bold"
+                          fontSize="2xl"
+                        >
+                          First post of the day, keep going
+                        </Text>
+                        <LottieView
+                          speed={0.8}
+                          onAnimationFinish={() => {
+                            setShouldCongrate(false)
+                          }}
+                          loop={false}
+                          autoPlay
+                          // eslint-disable-next-line react-native/no-inline-styles
+                          style={{
+                            flex: 1,
+                          }}
+                          // Find more Lottie files at https://lottiefiles.com/featured
+                          source={require("./congrate.json")}
+                        />
+                      </VStack>
+                    </AspectRatio>
+                  )}
               </ZStack>
 
               <Actionsheet isOpen={deleteOption.isOpen} onClose={deleteOption.onClose}>

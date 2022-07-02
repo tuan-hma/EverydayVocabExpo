@@ -146,7 +146,7 @@ export const YourdayTextScreen: FC<StackScreenProps<NavigatorParamList, "yourday
 
                   settingOptionStore.setSettingOption({
                     id: SettingOptionIdDefine.shouldActionAfterPost,
-                    value: "true",
+                    settingValue: "true",
                   })
                   navigation.navigate("home", {
                     afterPost: true,

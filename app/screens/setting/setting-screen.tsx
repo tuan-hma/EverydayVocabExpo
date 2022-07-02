@@ -137,10 +137,6 @@ export const SettingScreen: FC<StackScreenProps<NavigatorParamList, "setting">> 
       setIsNoti(!isNoti)
     }, [settingOptionStore])
 
-    autorun(() => {
-      console.log("Energy level:", colorTheme.name)
-    })
-
     return (
       <View testID="WelcomeScreen" style={FULL}>
         <Screen style={CONTAINER} preset="scroll" backgroundColor={colorTheme.palette.background}>
