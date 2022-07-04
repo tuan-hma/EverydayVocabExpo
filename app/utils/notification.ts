@@ -53,7 +53,7 @@ export async function requestPermissionsAsync() {
 
 export async function notificationSettingChange(isOn: boolean) {
   if (!isOn) {
-    await Notifications.cancelAllScheduledNotificationsAsync()
+    // await Notifications.cancelAllScheduledNotificationsAsync()
   }
 }
 
@@ -82,7 +82,7 @@ export async function scheduleYesterdayResultNoti(feeds: FeedSnapshot[]) {
       body: content,
       data: { data: "goes here" },
     },
-    trigger: { hour: 9, minute: 0, repeats: true },
+    trigger: { hour: 12, minute: 5, repeats: true },
   })
 
   // const titleMissing = "🥺 We missed you"

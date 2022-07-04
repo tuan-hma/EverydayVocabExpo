@@ -76,8 +76,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
     const todayFeeds = feedStore.feeds.filter(
       (feed) => moment(feed.id).format(DATE_FORMAT) === selectedDate,
     )
-    const isRequireAfterPostAction =
-      settingOptionStore.getSettingOption(SettingOptionIdDefine.shouldActionAfterPost) === "true"
+
     const sectionList = useRef<SectionList>()
     useFocusEffect(
       React.useCallback(() => {
@@ -85,6 +84,9 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
           "isRequireAfterPostAction:",
           settingOptionStore.getSettingOption(SettingOptionIdDefine.shouldActionAfterPost),
         )
+        const isRequireAfterPostAction =
+          settingOptionStore.getSettingOption(SettingOptionIdDefine.shouldActionAfterPost) ===
+          "true"
         if (isRequireAfterPostAction) {
           scheduleYesterdayResultNoti(todayFeeds).catch((e) => {
             console.log(e)
@@ -492,6 +494,7 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                             key={"main-feed-" + (item.item as FeedSnapshot).id}
                             renderToHardwareTextureAndroid
                             shouldRasterizeIOS
+                            paddingRight="5px"
                             // maxW={Dimensions.get("window").width - 20}
                             mt={item.index === 0 ? "10px" : "0px"}
                             mb={item.index === todayFeeds.length - 1 ? "100px" : "0px"}

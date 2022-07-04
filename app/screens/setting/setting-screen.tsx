@@ -5,6 +5,7 @@ import { observer } from "mobx-react-lite"
 import { Button, Header, Screen, GradientBackground } from "../../components"
 import { spacing, color } from "../../theme"
 import { NavigatorParamList } from "../../navigators"
+import Analytics from "expo-firebase-analytics"
 import {
   Flex,
   Button as NBButton,
@@ -190,6 +191,7 @@ export const SettingScreen: FC<StackScreenProps<NavigatorParamList, "setting">> 
                       //   imageRatio: 1,
                       //   imageBase64: "",
                       // })
+                      // Analytics.logEvent("Update Theme:" + selectedPalette.id, {})
                       settingOptionStore.setSettingOption({
                         id: SettingOptionIdDefine.colorTheme,
                         settingValue: selectedPalette.id,

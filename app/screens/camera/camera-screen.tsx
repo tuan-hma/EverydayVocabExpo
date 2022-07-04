@@ -14,7 +14,7 @@ import { CameraType } from "expo-camera/build/Camera.types"
 const FULL: ViewStyle = { flex: 1 }
 const CAMERA_STYLE: ViewStyle = {
   width: Dimensions.get("window").width,
-  height: (Dimensions.get("window").width * 3) / 4,
+  height: (Dimensions.get("window").width * 4) / 4,
 }
 
 export const CameraScreen: FC<StackScreenProps<NavigatorParamList, "camera">> = observer(
@@ -50,7 +50,7 @@ export const CameraScreen: FC<StackScreenProps<NavigatorParamList, "camera">> = 
       <ZStack bg="#000" flexDirection="column" w="full" h="full">
         <Box mt="40%" alignSelf="center" style={CAMERA_STYLE}>
           <Camera
-            ratio="4:3"
+            ratio="1:1"
             ref={(ref) => setCamera(ref)}
             style={{ flex: 1 }}
             type={type}

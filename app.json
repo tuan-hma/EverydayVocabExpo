@@ -9,7 +9,7 @@
   "expo": {
     "name": "MoodyDiary",
     "slug": "MoodyDiary",
-    "version": "1.0.2",
+    "version": "1.2.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "splash": {
@@ -23,7 +23,7 @@
     "assetBundlePatterns": ["**/*"],
     "userInterfaceStyle": "light",
     "ios": {
-      "buildNumber": "6",
+      "buildNumber": "8",
       "supportsTablet": false,
       "bundleIdentifier": "com.tuanhma.MoodyDiary",
       "googleServicesFile": "./GoogleService-Info.plist",
@@ -35,7 +35,8 @@
     },
     "android": {
       "package": "com.tuanhma.MoodyDiary",
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/images/favicon.png",
