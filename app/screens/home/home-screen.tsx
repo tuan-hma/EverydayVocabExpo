@@ -36,7 +36,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 import { Ionicons } from "@expo/vector-icons"
 // import { ScrollView } from "react-native-gesture-handler"
 
-import { scheduleYesterdayResultNoti } from "../../utils/notification"
 import { useStores } from "../../models"
 import { MainFeed } from "../../components/main-feed/main-feed"
 import moment from "moment"
@@ -88,9 +87,6 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
           settingOptionStore.getSettingOption(SettingOptionIdDefine.shouldActionAfterPost) ===
           "true"
         if (isRequireAfterPostAction) {
-          scheduleYesterdayResultNoti(todayFeeds).catch((e) => {
-            console.log(e)
-          })
           console.log("change selectedDate")
           setSelectedDate(moment().format(DATE_FORMAT))
           setShouldCongrate(true)
@@ -503,7 +499,9 @@ export const HomeScreen: FC<StackScreenProps<NavigatorParamList, "home">> = obse
                               feed={item.item as FeedSnapshot}
                               onClick={() => {
                                 if (todayFeeds[item.index].image !== "") {
-                                  setSelectedImage(todayFeeds[item.index].image)
+                                  setSelectedImage(
+                                    `data:image/jpeg;base64,${todayFeeds[item.index].imageBase64}`,
+                                  )
                                   imageModalDisclosure.onOpen()
                                 }
                               }}

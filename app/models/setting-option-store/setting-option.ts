@@ -11,6 +11,7 @@ export const SettingOptionModel = types.model("SettingOption").props({
 export class SettingOptionIdDefine {
   public static colorTheme = "colorTheme"
   public static shouldActionAfterPost = "shouldActionAfterPost"
+  public static notificationTime = "notificationTime"
 }
 
 type SettingOptionType = Instance<typeof SettingOptionModel>

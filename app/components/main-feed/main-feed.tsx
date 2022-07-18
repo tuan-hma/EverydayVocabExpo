@@ -110,7 +110,7 @@ export function MainFeed(props: MainFeedProps) {
                           h="150px"
                           borderRadius="10px"
                           w={`${150 * (props.feed.imageRatio ?? 1)}px`}
-                          source={{ uri: `data:image/jpeg;base64,${props.feed.imageBase64}` }}
+                          source={{ uri: props.feed.image }}
                           alt="post-image"
                         />
                       }
@@ -118,7 +118,7 @@ export function MainFeed(props: MainFeedProps) {
                       h="150px"
                       borderRadius="10px"
                       w={`${150 * (props.feed.imageRatio ?? 1)}px`}
-                      source={{ uri: props.feed.image }}
+                      source={{ uri: `data:image/jpeg;base64,${props.feed.imageBase64}` }}
                       alt="post-image"
                     />
                   )}

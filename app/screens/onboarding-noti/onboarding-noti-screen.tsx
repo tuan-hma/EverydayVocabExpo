@@ -31,6 +31,8 @@ import {
 import { CommonButton } from "../../components/common-button/common-button"
 import { SettingState } from "../../utils/setting-state"
 import { aquireNotifyPermission } from "../../utils/notification"
+import { useStores } from "../../models"
+import { SettingOptionIdDefine } from "../../models/setting-option-store/setting-option"
 
 const FULL: ViewStyle = { flex: 1 }
 const CONTAINER: ViewStyle = {
@@ -42,6 +44,7 @@ export const OnboardingNotiScreen: FC<
   StackScreenProps<NavigatorParamList, "onboardingNoti">
 > = observer(({ navigation, route }) => {
   const [hasPermission, setHasPermission] = useState(null)
+  const { settingOptionStore } = useStores()
 
   return (
     <View testID="WelcomeScreen" style={FULL}>
@@ -93,6 +96,10 @@ export const OnboardingNotiScreen: FC<
                 <CommonButton
                   onClick={() => {
                     aquireNotifyPermission().then(() => {
+                      settingOptionStore.setSettingOption({
+                        id: SettingOptionIdDefine.notificationTime,
+                        settingValue: "22",
+                      })
                       navigation.navigate("home")
                     })
                   }}
@@ -102,7 +109,10 @@ export const OnboardingNotiScreen: FC<
               <Box shadow="9" pt="20px" pb="20px" pr="10px" alignSelf="center">
                 <CommonButton
                   onClick={() => {
-                    SettingState.setIsDailySummary(false)
+                    settingOptionStore.setSettingOption({
+                      id: SettingOptionIdDefine.notificationTime,
+                      settingValue: "off",
+                    })
                     navigation.navigate("home")
                   }}
                   text="Nah  💦"

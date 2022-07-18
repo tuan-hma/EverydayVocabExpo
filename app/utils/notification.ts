@@ -57,13 +57,54 @@ export async function notificationSettingChange(isOn: boolean) {
   }
 }
 
-export async function scheduleYesterdayResultNoti(feeds: FeedSnapshot[]) {
-  const moodsum = getMoodSumResult(feeds)
-  let emoText = ""
-  moodsum.forEach((mood) => (emoText += `${mood.count}x${mood.mood.emoji} `))
-  const title = "🌞 Good morning!"
-  const content =
-    "Wish you a good day! And remember to take a moment to reflect on your day on Moody Diary!"
+// export async function scheduleYesterdayResultNoti(feeds: FeedSnapshot[]) {
+//   const moodsum = getMoodSumResult(feeds)
+//   let emoText = ""
+//   moodsum.forEach((mood) => (emoText += `${mood.count}x${mood.mood.emoji} `))
+//   const title = "🌞 Good morning!"
+//   const content =
+//     "Wish you a good day! And remember to take a moment to reflect on your day on Moody Diary!"
+
+//   // if (moodsum.length > 0) {
+//   //   title = "✏️Yesterday's summary!"
+//   //   content = `${emoText}, let's write something for today`
+//   // }
+
+//   console.log("scheduleYesterdayResultNoti", title, content)
+
+//   // let targetTime = moment().add(1, "d").format("YYYY/MM/DD") + " 07:00:00"
+//   // targetTime = "2022/06/25 15:20:00"
+
+//   await Notifications.cancelAllScheduledNotificationsAsync()
+//   await Notifications.scheduleNotificationAsync({
+//     content: {
+//       title: title,
+//       body: content,
+//       data: { data: "goes here" },
+//     },
+//     trigger: { hour: 12, minute: 5, repeats: true },
+//   })
+
+//   // const titleMissing = "🥺 We missed you"
+//   // const contentMissng = "Let's write something for today"
+//   // await Notifications.scheduleNotificationAsync({
+//   //   content: {
+//   //     title: titleMissing,
+//   //     body: contentMissng,
+//   //     data: { data: "goes here" },
+//   //   },
+//   //   trigger: { date: moment(moment().add(2, "d").format("YYYY/MM/DD") + " 09:00:00").toDate() },
+//   // })
+// }
+
+export async function scheduleRemindNoti(time: string) {
+  await Notifications.cancelAllScheduledNotificationsAsync()
+
+  if (time === "off") {
+    return
+  }
+  const title = "How your day going on ?"
+  const content = "Let's take a moment to reflect on your day on Moody Diary!"
 
   // if (moodsum.length > 0) {
   //   title = "✏️Yesterday's summary!"
@@ -72,29 +113,17 @@ export async function scheduleYesterdayResultNoti(feeds: FeedSnapshot[]) {
 
   console.log("scheduleYesterdayResultNoti", title, content)
 
-  let targetTime = moment().add(1, "d").format("YYYY/MM/DD") + " 07:00:00"
-  targetTime = "2022/06/25 15:20:00"
+  // let targetTime = moment().add(1, "d").format("YYYY/MM/DD") + " 07:00:00"
+  // targetTime = "2022/06/25 15:20:00"
 
-  await Notifications.cancelAllScheduledNotificationsAsync()
   await Notifications.scheduleNotificationAsync({
     content: {
       title: title,
       body: content,
       data: { data: "goes here" },
     },
-    trigger: { hour: 12, minute: 5, repeats: true },
+    trigger: { hour: Number(time), minute: 0, repeats: true },
   })
-
-  // const titleMissing = "🥺 We missed you"
-  // const contentMissng = "Let's write something for today"
-  // await Notifications.scheduleNotificationAsync({
-  //   content: {
-  //     title: titleMissing,
-  //     body: contentMissng,
-  //     data: { data: "goes here" },
-  //   },
-  //   trigger: { date: moment(moment().add(2, "d").format("YYYY/MM/DD") + " 09:00:00").toDate() },
-  // })
 }
 
 export async function registerForPushNotificationsAsync() {

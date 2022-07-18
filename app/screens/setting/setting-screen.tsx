@@ -24,6 +24,8 @@ import {
   Image,
   Switch,
   ScrollView,
+  Select,
+  CheckIcon,
 } from "native-base"
 
 import * as Notifications from "expo-notifications"
@@ -35,6 +37,7 @@ import { MoodUtil } from "../../models/mood"
 import { useStores } from "../../models"
 import * as Haptics from "expo-haptics"
 import { SettingOptionIdDefine } from "../../models/setting-option-store/setting-option"
+import { scheduleRemindNoti } from "../../utils/notification"
 
 const FULL: ViewStyle = { flex: 1 }
 const CONTAINER: ViewStyle = {
@@ -119,17 +122,16 @@ const ThemeStyleBox = (props: ThemeStyleBoxProps) => {
 
 export const SettingScreen: FC<StackScreenProps<NavigatorParamList, "setting">> = observer(
   ({ navigation }) => {
-    const notificationListener = useRef<Subscription>()
-    const responseListener = useRef<Subscription>()
     const [isNoti, setIsNoti] = useState<boolean>(false)
+    const [notiTime, setNotiTime] = React.useState("")
     const { settingOptionStore, feedStore } = useStores()
     const colorTheme = ColorThemeUtil.getColorThemeById(
       settingOptionStore.getSettingOption(SettingOptionIdDefine.colorTheme),
     )
 
     useEffect(() => {
-      console.log("SettingScreen useEffect")
       setIsNoti(!isNoti)
+      setNotiTime(settingOptionStore.getSettingOption(SettingOptionIdDefine.notificationTime))
     }, [settingOptionStore])
 
     return (
@@ -169,9 +171,10 @@ export const SettingScreen: FC<StackScreenProps<NavigatorParamList, "setting">> 
               Sum up your emotions every day
             </Text>
           </Flex> */}
+          {/* Color Style */}
           <Flex pl="5" pr="5" mt="20px">
             <HStack justifyContent="space-between" alignItems="center">
-              <Text color={colorTheme.palette.text} fontWeight="bold" fontSize="2xl">
+              <Text mb="10px" color={colorTheme.palette.text} fontWeight="bold" fontSize="2xl">
                 Color Style
               </Text>
             </HStack>
@@ -223,6 +226,63 @@ export const SettingScreen: FC<StackScreenProps<NavigatorParamList, "setting">> 
               onClick={() => {}}
               onLongTap={() => {}}
             />
+          </Flex>
+          {/* Notification */}
+          <Flex pl="5" pr="5" mt="40px">
+            <HStack justifyContent="space-between" alignItems="center">
+              <Text mb="10px" color={colorTheme.palette.text} fontWeight="bold" fontSize="2xl">
+                Notification Setting
+              </Text>
+            </HStack>
+            <HStack justifyContent="space-between" alignItems="center">
+              <Text color={colorTheme.palette.text} fontWeight="bold" fontSize="md">
+                Send on:
+              </Text>
+              <Select
+                background={colorTheme.palette.background}
+                _text={{
+                  color: colorTheme.palette.text,
+                }}
+                selectedValue={notiTime}
+                minWidth="200"
+                accessibilityLabel="Notification Time"
+                placeholder="Notification Time"
+                _selectedItem={{
+                  borderRadius: "10px",
+                  bg: colorTheme.palette.backgroundSelected,
+                  endIcon: <CheckIcon size="5" />,
+                }}
+                mt={1}
+                onValueChange={(itemValue) => {
+                  setNotiTime(itemValue)
+                  scheduleRemindNoti(itemValue)
+                  settingOptionStore.setSettingOption({
+                    id: SettingOptionIdDefine.notificationTime,
+                    settingValue: itemValue,
+                  })
+                }}
+              >
+                <Select.Item
+                  background={colorTheme.palette.background}
+                  _pressed={{
+                    background: colorTheme.palette.backgroundSelected,
+                  }}
+                  label="Off"
+                  value="off"
+                />
+                {Array.from({ length: 24 }, (v, k) => k + 1).map((i) => (
+                  <Select.Item
+                    rounded="10px"
+                    _pressed={{
+                      background: colorTheme.palette.backgroundSelected,
+                    }}
+                    key={`noti-select-${i}`}
+                    label={`${("0" + i).slice(-2)}:00`}
+                    value={`${i}`}
+                  />
+                ))}
+              </Select>
+            </HStack>
           </Flex>
         </Screen>
       </View>
