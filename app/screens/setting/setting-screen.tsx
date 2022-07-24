@@ -240,8 +240,15 @@ export const SettingScreen: FC<StackScreenProps<NavigatorParamList, "setting">> 
               </Text>
               <Select
                 background={colorTheme.palette.background}
+                color={colorTheme.palette.text}
                 _text={{
                   color: colorTheme.palette.text,
+                }}
+                _actionSheetBody={{
+                  background: colorTheme.palette.background,
+                }}
+                _actionSheetContent={{
+                  background: colorTheme.palette.background,
                 }}
                 selectedValue={notiTime}
                 minWidth="200"
@@ -263,7 +270,10 @@ export const SettingScreen: FC<StackScreenProps<NavigatorParamList, "setting">> 
                 }}
               >
                 <Select.Item
-                  background={colorTheme.palette.background}
+                  _text={{
+                    color: colorTheme.palette.text,
+                  }}
+                  background={color.transparent}
                   _pressed={{
                     background: colorTheme.palette.backgroundSelected,
                   }}
@@ -272,7 +282,11 @@ export const SettingScreen: FC<StackScreenProps<NavigatorParamList, "setting">> 
                 />
                 {Array.from({ length: 24 }, (v, k) => k + 1).map((i) => (
                   <Select.Item
+                    _text={{
+                      color: colorTheme.palette.text,
+                    }}
                     rounded="10px"
+                    background={color.transparent}
                     _pressed={{
                       background: colorTheme.palette.backgroundSelected,
                     }}
