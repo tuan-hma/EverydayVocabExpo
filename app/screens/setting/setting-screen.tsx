@@ -1,11 +1,12 @@
-import React, { FC, useEffect, useRef, useState } from "react"
-import { View, ViewStyle, TextStyle, ImageStyle, SafeAreaView } from "react-native"
+import React, { FC, useEffect, useState } from "react"
+import * as DocumentPicker from "expo-document-picker"
+import { View, ViewStyle, Share, Alert } from "react-native"
 import { StackScreenProps } from "@react-navigation/stack"
 import { observer } from "mobx-react-lite"
-import { Button, Header, Screen, GradientBackground } from "../../components"
+import { Screen } from "../../components"
 import { spacing, color } from "../../theme"
 import { NavigatorParamList } from "../../navigators"
-import Analytics from "expo-firebase-analytics"
+import * as FileSystem from "expo-file-system"
 import {
   Flex,
   Button as NBButton,
@@ -21,16 +22,12 @@ import {
   Icon,
   ChevronLeftIcon,
   IconButton,
-  Image,
-  Switch,
   ScrollView,
   Select,
   CheckIcon,
 } from "native-base"
 
 import * as Notifications from "expo-notifications"
-import { Subscription } from "expo-modules-core"
-
 import { ColorTheme, ColorThemeUtil } from "../../models/colorTheme"
 import { MainFeed } from "../../components/main-feed/main-feed"
 import { MoodUtil } from "../../models/mood"
@@ -38,6 +35,9 @@ import { useStores } from "../../models"
 import * as Haptics from "expo-haptics"
 import { SettingOptionIdDefine } from "../../models/setting-option-store/setting-option"
 import { scheduleRemindNoti } from "../../utils/notification"
+import { CommonButton } from "../../components/common-button/common-button"
+import moment from "moment"
+import { FeedSnapshot } from "../../models/feed-store/feed"
 
 const FULL: ViewStyle = { flex: 1 }
 const CONTAINER: ViewStyle = {
@@ -57,6 +57,17 @@ interface ThemeStyleBoxProps {
   onChanged: (ColorTheme) => void
   colorTheme: ColorTheme
   isSelected: boolean
+}
+
+const gifDir = FileSystem.cacheDirectory + "lifelog_export/"
+const gifFileUri = () => gifDir + `lifelog_${moment().toDate().getTime()}.json`
+// Checks if gif directory exists. If not, creates it
+async function ensureDirExists() {
+  const dirInfo = await FileSystem.getInfoAsync(gifDir)
+  if (!dirInfo.exists) {
+    console.log("Gif directory doesn't exist, creating...")
+    await FileSystem.makeDirectoryAsync(gifDir, { intermediates: true })
+  }
 }
 
 const ThemeStyleBox = (props: ThemeStyleBoxProps) => {
@@ -122,6 +133,8 @@ const ThemeStyleBox = (props: ThemeStyleBoxProps) => {
 
 export const SettingScreen: FC<StackScreenProps<NavigatorParamList, "setting">> = observer(
   ({ navigation }) => {
+    const [isImporting, setIsImporting] = useState(false)
+    const [isExporting, setIsExporting] = useState(false)
     const [isNoti, setIsNoti] = useState<boolean>(false)
     const [notiTime, setNotiTime] = React.useState("")
     const { settingOptionStore, feedStore } = useStores()
@@ -296,6 +309,55 @@ export const SettingScreen: FC<StackScreenProps<NavigatorParamList, "setting">> 
                   />
                 ))}
               </Select>
+            </HStack>
+          </Flex>
+          {/* Export/Import */}
+          <Flex pl="5" pr="5" mt="40px">
+            <HStack justifyContent="space-between" alignItems="center">
+              <Text mb="10px" color={colorTheme.palette.text} fontWeight="bold" fontSize="2xl">
+                Export/Import Data
+              </Text>
+            </HStack>
+            <HStack alignItems="center" space="md">
+              <CommonButton
+                text="🔽 Export"
+                isLoading={isExporting}
+                onClick={async () => {
+                  try {
+                    setIsExporting(true)
+                    const fileUri = gifFileUri()
+                    await ensureDirExists()
+                    const data = feedStore.feeds
+                    await FileSystem.writeAsStringAsync(fileUri, JSON.stringify(data))
+                    Share.share({
+                      title: "lifelog_export.data",
+                      url: fileUri,
+                    })
+                  } catch (error) {
+                    console.warn(error)
+                  } finally {
+                    setIsExporting(false)
+                  }
+                }}
+              />
+              <CommonButton
+                text="🔼 Import"
+                isLoading={isImporting}
+                onClick={async () => {
+                  setIsImporting(true)
+                  const dataPicker = await DocumentPicker.getDocumentAsync()
+                  if (dataPicker.type === "success") {
+                    console.log("data:", dataPicker.uri)
+                    const data = await FileSystem.readAsStringAsync(dataPicker.uri)
+                    const parsedData = JSON.parse(data) as FeedSnapshot[]
+                    feedStore.addFeeds(parsedData)
+                    Alert.alert("Infomation", "Import data is done", [
+                      { text: "OK", onPress: () => console.log("OK Pressed") },
+                    ])
+                  }
+                  setIsImporting(false)
+                }}
+              />
             </HStack>
           </Flex>
         </Screen>

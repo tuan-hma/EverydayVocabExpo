@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Box, Pressable, Text, Image } from "native-base"
+import { Box, Pressable, Text, Image, Spinner } from "native-base"
 import { color } from "../../theme"
 import * as Haptics from "expo-haptics"
 import { useStores } from "../../models"
@@ -9,6 +9,7 @@ export interface CommonButtonProps {
   onClick: () => void
   icon?: any
   text?: string
+  isLoading?: boolean
 }
 
 /**
@@ -73,6 +74,7 @@ export function CommonButton(props: CommonButtonProps) {
                 {props.text}
               </Text>
             )}
+            {props.isLoading && <Spinner ml="10px" color={colorTheme.palette.text} />}
           </Box>
         )
       }}

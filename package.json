@@ -39,6 +39,8 @@
     "expo-app-loading": "~1.2.1",
     "expo-camera": "~12.0.3",
     "expo-device": "~4.0.3",
+    "expo-document-picker": "~10.0.3",
+    "expo-file-system": "~13.0.3",
     "expo-firebase-analytics": "~5.0.3",
     "expo-font": "~10.0.3",
     "expo-haptics": "~11.0.3",

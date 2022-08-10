@@ -9,7 +9,7 @@
   "expo": {
     "name": "Lifelog",
     "slug": "MoodyDiary",
-    "version": "1.2.4",
+    "version": "1.2.5",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "splash": {
@@ -23,7 +23,8 @@
     "assetBundlePatterns": ["**/*"],
     "userInterfaceStyle": "light",
     "ios": {
-      "buildNumber": "11",
+      "usesIcloudStorage": true,
+      "buildNumber": "12",
       "supportsTablet": false,
       "bundleIdentifier": "com.tuanhma.MoodyDiary",
       "googleServicesFile": "./GoogleService-Info.plist",
@@ -36,7 +37,7 @@
     "android": {
       "package": "com.tuanhma.MoodyDiary",
       "googleServicesFile": "./google-services.json",
-      "versionCode": 2
+      "versionCode": 3
     },
     "web": {
       "favicon": "./assets/images/favicon.png",

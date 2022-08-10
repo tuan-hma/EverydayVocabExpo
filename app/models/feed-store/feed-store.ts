@@ -34,6 +34,9 @@ export const FeedStoreModel = types
     },
   }))
   .actions((self) => ({
+    addFeeds: (datas: FeedSnapshot[]) => {
+      self.saveFeeds(datas)
+    },
     getFeeds: async () => {
       const value = await AsyncStorage.getItem("@feeds")
       if (value !== null) {
